@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Set Duration</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg-color:#232f52;
+  --text-color:#ffffff;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg-color);
+  color:var(--text-color);
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+
+/* PICKER CONTAINER */
+
+.picker{
+  display:flex;
+  gap:40px;
+  position:relative;
+}
+
+/* SCROLL COLUMNS */
+
+.column{
+  height:220px;
+  overflow-y:scroll;
+  scroll-snap-type:y mandatory;
+  -ms-overflow-style:none;
+  scrollbar-width:none;
+}
+
+.column::-webkit-scrollbar{
+  display:none;
+}
+
+/* ITEMS */
+
+.item{
+  height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:26px;
+  opacity:.4;
+  scroll-snap-align:center;
+  transition:0.2s;
+}
+
+.item.active{
+  opacity:1;
+  font-weight:600;
+}
+
+/* CENTER HIGHLIGHT */
+
+.highlight{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:100%;
+  height:44px;
+  border-top:1px solid rgba(255,255,255,0.2);
+  border-bottom:1px solid rgba(255,255,255,0.2);
+  pointer-events:none;
+}
+
+/* LABELS */
+
+.labels{
+  display:flex;
+  justify-content:center;
+  gap:80px;
+  margin-top:10px;
+  opacity:.6;
+  font-style:italic;
+}
+
+/* BUTTON */
+
+#setBtn{
+  margin-top:40px;
+  padding:14px 30px;
+  border-radius:14px;
+  border:none;
+  background:rgba(255,255,255,0.15);
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="picker">
+
+  <div id="minutes" class="column"></div>
+  <div id="seconds" class="column"></div>
+
+  <div class="highlight"></div>
+</div>
+
+<div class="labels">
+  <div>min</div>
+  <div>sec</div>
+</div>
+
+<button id="setBtn">Set</button>
+
+<script>
+
+const minutesCol = document.getElementById("minutes");
+const secondsCol = document.getElementById("seconds");
+
+// CREATE ITEMS
+function createItems(container, max){
+  for(let i=0;i<=max;i++){
+    const el = document.createElement("div");
+    el.className = "item";
+    el.innerText = String(i).padStart(2,"0");
+    container.appendChild(el);
+  }
+}
+
+createItems(minutesCol,59);
+createItems(secondsCol,59);
+
+// SCROLL TO DEFAULT OR SAVED
+function scrollToValue(container, value){
+  container.scrollTop = value * 44;
+}
+
+const saved = localStorage.getItem("timer_duration");
+
+if(saved){
+  const [m,s] = saved.split(":").map(Number);
+  scrollToValue(minutesCol, m);
+  scrollToValue(secondsCol, s);
+} else {
+  scrollToValue(minutesCol, 5); // default 5 min
+}
+
+// ACTIVE ITEM TRACKING
+function updateActive(container){
+  const items = container.querySelectorAll(".item");
+  const center = container.scrollTop + container.offsetHeight/2;
+
+  items.forEach(item=>{
+    const offset = item.offsetTop + item.offsetHeight/2;
+    const distance = Math.abs(center - offset);
+
+    item.classList.toggle("active", distance < 25);
+  });
+}
+
+minutesCol.addEventListener("scroll", ()=>updateActive(minutesCol));
+secondsCol.addEventListener("scroll", ()=>updateActive(secondsCol));
+
+// INITIAL STATE
+updateActive(minutesCol);
+updateActive(secondsCol);
+
+// GET SELECTED VALUE
+function getValue(container){
+  return Math.round(container.scrollTop / 44);
+}
+
+// SAVE
+document.getElementById("setBtn").onclick = () => {
+
+  const min = getValue(minutesCol);
+  const sec = getValue(secondsCol);
+
+  const formatted = `${String(min).padStart(2,"0")}:${String(sec).padStart(2,"0")}`;
+
+  localStorage.setItem("timer_duration", formatted);
+
+  window.location.href = "timer-setup.html";
+};
+
+</script>
+
+</body>
+</html>

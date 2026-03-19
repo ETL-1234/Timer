@@ -34,6 +34,32 @@ body{
   gap:30px;                 /* clean spacing instead of space-between */
 }
 
+  #image{
+  width:200px;
+  height:200px;
+  object-fit:cover;
+  border-radius:18px;
+  transition:transform .3s ease;
+}
+
+#image:active{
+  transform:scale(.96);
+}
+
+#name{
+  font-size:24px;
+  font-weight:600;
+  margin-top:10px;
+}
+
+#description{
+  font-size:16px;
+  font-style:italic;
+  opacity:.85;
+  max-width:320px;
+  line-height:1.4;
+}
+
 /* INTRO */
 
 #intro{

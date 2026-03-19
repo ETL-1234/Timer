@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Choose End Bell</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg-color:#232f52;
+  --text-color:#ffffff;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg-color);
+  color:var(--text-color);
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:space-between;
+  padding:30px 20px;
+  text-align:center;
+}
+
+/* INTRO */
+
+#intro{
+  font-size:16px;
+  font-style:italic;
+  opacity:.85;
+  max-width:420px;
+}
+
+/* CAROUSEL */
+
+#carousel{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:20px;
+  width:100%;
+  max-width:420px;
+}
+
+/* ARROWS */
+
+.arrow{
+  font-size:28px;
+  cursor:pointer;
+  user-select:none;
+  opacity:.7;
+}
+
+.arrow:active{
+  opacity:1;
+}
+
+/* IMAGE */
+
+#image{
+  width:220px;
+  height:220px;
+  object-fit:cover;
+  border-radius:18px;
+}
+
+/* TEXT */
+
+#name{
+  font-size:24px;
+  font-weight:600;
+  margin-top:20px;
+}
+
+#description{
+  font-size:18px;
+  font-style:italic;
+  margin-top:10px;
+  opacity:.85;
+}
+
+/* BUTTONS */
+
+.controls{
+  display:flex;
+  gap:20px;
+  margin-top:20px;
+}
+
+.btn{
+  width:70px;
+  height:70px;
+  border-radius:50%;
+  border:none;
+  background:rgba(255,255,255,0.15);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
+
+.btn svg{
+  width:28px;
+  height:28px;
+  fill:white;
+}
+
+#setBtn{
+  margin-top:10px;
+  padding:14px 30px;
+  border-radius:14px;
+  border:none;
+  background:rgba(255,255,255,0.2);
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div id="intro">
+Choose a sound that supports your focus and how you want to feel at the end of your meditation. Bells and brass bowls offer clear, grounding tones to center the mind, while crystal bowls bring a softer, more subtle energetic quality. Koshi chimes are one minute long for a gentle, spacious way to close your practice.
+</div>
+
+<div>
+
+  <div id="carousel">
+    <div class="arrow" id="left">&#8249;</div>
+    <img id="image" src="">
+    <div class="arrow" id="right">&#8250;</div>
+  </div>
+
+  <div id="name"></div>
+  <div id="description"></div>
+
+  <div class="controls">
+    <button class="btn" id="playBtn">
+      <svg viewBox="0 0 24 24">
+        <polygon points="6,4 20,12 6,20"></polygon>
+      </svg>
+    </button>
+  </div>
+
+  <button id="setBtn">Set</button>
+
+</div>
+
+<script>
+
+const SUPABASE_URL = "https://tppyzexttkuvcobbbmaz.supabase.co";
+const SUPABASE_KEY = "sb_publishable_VZiTsc0JGVx6tVf2Zu-9uQ_-FwjGpQW";
+
+let sounds = [];
+let index = 0;
+let audio = null;
+
+// LOAD DATA
+async function loadSounds(){
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/selfpracticebells?select=*&active=eq.true`,
+    {
+      headers:{
+        apikey:SUPABASE_KEY,
+        Authorization:`Bearer ${SUPABASE_KEY}`
+      }
+    }
+  );
+
+  sounds = await res.json();
+
+  if(!sounds.length){
+    alert("No sounds found");
+    return;
+  }
+
+  render();
+}
+
+// RENDER
+function render(){
+
+  const sound = sounds[index];
+
+  document.getElementById("image").src = sound.imageurl;
+  document.getElementById("name").innerText = sound.name;
+  document.getElementById("description").innerText = sound.description;
+
+  // preload audio
+  audio = new Audio(sound.mp3url);
+  audio.preload = "auto";
+}
+
+// NAVIGATION
+document.getElementById("left").onclick = () => {
+  index = (index - 1 + sounds.length) % sounds.length;
+  render();
+};
+
+document.getElementById("right").onclick = () => {
+  index = (index + 1) % sounds.length;
+  render();
+};
+
+// PLAY
+document.getElementById("playBtn").onclick = () => {
+  if(audio){
+    audio.currentTime = 0;
+    audio.play().catch(()=>{});
+  }
+
+  // optional vibration
+  if(navigator.vibrate) navigator.vibrate(20);
+};
+
+// SET
+document.getElementById("setBtn").onclick = () => {
+
+  const selected = sounds[index];
+
+  localStorage.setItem("timer_endbell", selected.name);
+  localStorage.setItem("timer_endbell_url", selected.mp3url);
+
+  window.location.href = "timer-setup.html";
+};
+
+// SWIPE SUPPORT (mobile)
+let startX = 0;
+
+document.addEventListener("touchstart", e=>{
+  startX = e.touches[0].clientX;
+});
+
+document.addEventListener("touchend", e=>{
+  let diff = e.changedTouches[0].clientX - startX;
+
+  if(Math.abs(diff) > 50){
+    if(diff > 0){
+      index = (index - 1 + sounds.length) % sounds.length;
+    } else {
+      index = (index + 1) % sounds.length;
+    }
+    render();
+  }
+});
+
+// INIT
+loadSounds();
+
+</script>
+
+</body>
+</html>

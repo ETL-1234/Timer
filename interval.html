@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Set Interval</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg-color:#232f52;
+  --text-color:#ffffff;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg-color);
+  color:var(--text-color);
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+
+/* PICKER */
+
+.column{
+  height:220px;
+  overflow-y:scroll;
+  scroll-snap-type:y mandatory;
+  -ms-overflow-style:none;
+  scrollbar-width:none;
+}
+
+.column::-webkit-scrollbar{
+  display:none;
+}
+
+.item{
+  height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:26px;
+  opacity:.4;
+  scroll-snap-align:center;
+  transition:.2s;
+}
+
+.item.active{
+  opacity:1;
+  font-weight:600;
+}
+
+/* HIGHLIGHT */
+
+.highlight{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:120px;
+  height:44px;
+  border-top:1px solid rgba(255,255,255,0.2);
+  border-bottom:1px solid rgba(255,255,255,0.2);
+  pointer-events:none;
+}
+
+/* LABEL */
+
+.label{
+  margin-top:10px;
+  opacity:.6;
+  font-style:italic;
+}
+
+/* BUTTON */
+
+#setBtn{
+  margin-top:40px;
+  padding:14px 30px;
+  border-radius:14px;
+  border:none;
+  background:rgba(255,255,255,0.15);
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div style="position:relative">
+  <div id="minutes" class="column"></div>
+  <div class="highlight"></div>
+</div>
+
+<div class="label">minutes</div>
+
+<button id="setBtn">Set</button>
+
+<script>
+
+const col = document.getElementById("minutes");
+
+// CREATE ITEMS (0 = none)
+function createItems(){
+  for(let i=0;i<=59;i++){
+    const el = document.createElement("div");
+    el.className = "item";
+
+    el.innerText = i === 0 ? "none" : String(i).padStart(2,"0");
+
+    col.appendChild(el);
+  }
+}
+
+createItems();
+
+// LOAD SAVED VALUE
+const saved = localStorage.getItem("timer_interval");
+
+if(saved){
+  if(saved === "none"){
+    col.scrollTop = 0;
+  } else {
+    const val = parseInt(saved);
+    col.scrollTop = val * 44;
+  }
+}
+
+// ACTIVE STATE
+function updateActive(){
+  const items = col.querySelectorAll(".item");
+  const center = col.scrollTop + col.offsetHeight/2;
+
+  items.forEach(item=>{
+    const offset = item.offsetTop + item.offsetHeight/2;
+    const distance = Math.abs(center - offset);
+    item.classList.toggle("active", distance < 25);
+  });
+}
+
+col.addEventListener("scroll", updateActive);
+updateActive();
+
+// GET VALUE
+function getValue(){
+  return Math.round(col.scrollTop / 44);
+}
+
+// SAVE
+document.getElementById("setBtn").onclick = () => {
+
+  const val = getValue();
+
+  if(val === 0){
+    localStorage.setItem("timer_interval", "none");
+  } else {
+    localStorage.setItem("timer_interval", `${val}`);
+  }
+
+  window.location.href = "timer-setup.html";
+};
+
+</script>
+
+</body>
+</html>

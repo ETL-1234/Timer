@@ -23,12 +23,15 @@ body{
   background:var(--bg-color);
   color:var(--text-color);
   height:100vh;
+
   display:flex;
   flex-direction:column;
   align-items:center;
-  justify-content:space-between;
-  padding:30px 20px;
+  justify-content:center;   /* ✅ THIS FIXES THE LAYOUT */
+
+  padding:20px;
   text-align:center;
+  gap:30px;                 /* clean spacing instead of space-between */
 }
 
 /* INTRO */

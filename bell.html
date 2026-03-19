@@ -237,6 +237,23 @@ async function loadSounds(){
   render();
 }
 
+// FORMAT DESCRIPTION
+  
+  function formatDescription(text){
+  if(!text) return "";
+
+  if(text.includes(".")){
+    const parts = text.split(".");
+    return parts[0] + ".<br>" + (parts[1]?.trim() || "");
+  }
+
+  if(text.includes("Supports")){
+    return text.replace("Supports", "<br>Supports");
+  }
+
+  return text;
+}
+  
 // RENDER
 function render(){
 
@@ -244,7 +261,7 @@ function render(){
 
   document.getElementById("image").src = sound.imageurl;
   document.getElementById("name").innerText = sound.name;
-  document.getElementById("description").innerText = sound.description;
+ document.getElementById("description").innerHTML = formatDescription(sound.description);
 
   // preload audio
   audio = new Audio(sound.mp3url);

@@ -218,7 +218,7 @@ let audio = null;
 // LOAD DATA
 async function loadSounds(){
   const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/selfpracticebells?select=*&active=eq.true`,
+    `${SUPABASE_URL}/rest/v1/selfpracticebells?select=*&active=eq.true&order=order_by.asc`,
     {
       headers:{
         apikey:SUPABASE_KEY,

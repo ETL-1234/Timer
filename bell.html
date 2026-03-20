@@ -320,7 +320,8 @@ document.getElementById("playBtn").onclick = () => {
 
 // SET
 document.getElementById("setBtn").onclick = () => {
-
+document.getElementById("playBtn").innerText = "Playing...";
+  
   const selected = sounds[index];
 
   localStorage.setItem("timer_endbell", selected.name);

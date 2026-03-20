@@ -323,8 +323,7 @@ document.getElementById("playBtn").onclick = () => {
 
   // ⏱ LIMIT playback (6 seconds)
   audioTimeout = setTimeout(() => {
-    audio.pause();
-    audio.currentTime = 0;
+     fadeOut(audio);
   }, 6000);
 
   // optional vibration

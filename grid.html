@@ -95,14 +95,19 @@ if(saved === theme.imageurl){
     const img = document.createElement("img");
     img.src = theme.imageurl;
 
-    img.onclick = () => {
+       // Store BOTH image + name (important for later)
+     img.onclick = () => {
 
-      // Store BOTH image + name (important for later)
-      localStorage.setItem("timer_theme", theme.name);
-      localStorage.setItem("timer_theme_image", theme.imageurl);
+  if(theme.name.toLowerCase() === "default"){
+    localStorage.removeItem("timer_theme");
+    localStorage.removeItem("timer_theme_image");
+  } else {
+    localStorage.setItem("timer_theme", theme.name);
+    localStorage.setItem("timer_theme_image", theme.imageurl);
+  }
 
-      window.location.href = "timer-setup.html";
-    };
+  window.location.href = "https://etl-1234.github.io/Timer/setup.html";
+};
 
     grid.appendChild(img);
   });

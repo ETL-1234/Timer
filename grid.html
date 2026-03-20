@@ -92,7 +92,7 @@ async function loadThemes(){
   const saved = localStorage.getItem("timer_theme_image");
 
   // ✅ Default theme (always visible border)
-  if(theme.name.startsWith("00")){
+  if(theme.name.includes("default")){
     img.style.outline = "2px solid white";
     img.style.outlineOffset = "-2px";
   }

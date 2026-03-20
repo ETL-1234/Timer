@@ -93,8 +93,7 @@ async function loadThemes(){
 
   // ✅ Default theme (always visible border)
   if(theme.name.includes("default")){
-    img.style.outline = "2px solid white";
-    img.style.outlineOffset = "-2px";
+    img.style.border = "2px solid rgba(255,255,255,0.5)";
   }
 
   // ✅ Selected theme (stronger border)

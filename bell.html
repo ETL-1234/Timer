@@ -152,7 +152,7 @@ body{
   fill:white;
 }
 
-#setBtn{
+.actionBtn{
   margin-top:10px;
   padding:14px 30px;
   border-radius:14px;
@@ -161,6 +161,12 @@ body{
   color:white;
   font-size:16px;
   cursor:pointer;
+  transition:transform .15s ease, background .2s ease;
+}
+
+.actionBtn:active{
+  transform:scale(.96);
+  background:rgba(255,255,255,0.3);
 }
 
   #content{

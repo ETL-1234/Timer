@@ -237,7 +237,7 @@ async function loadSounds(){
 
   // ✅ STOP previous audio cleanly
   if(audio){
-    fadeOut(audio, 300);
+    fadeOut(audio, 6000);
   }
 
   if(audioTimeout){
@@ -299,7 +299,7 @@ document.getElementById("playBtn").onclick = () => {
   if(!audio) return;
 
   // ✅ STOP any previous audio first
-  fadeOut(audio, 300);
+  fadeOut(audio, 6000);
 
   // ✅ CLEAR previous timer
   if(audioTimeout){

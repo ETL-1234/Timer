@@ -83,41 +83,42 @@ async function loadThemes(){
   const data = await res.json();
  
   const grid = document.getElementById("grid");
-
-  data.forEach(theme => {
+  
+ data.forEach(theme => {
 
   const img = document.createElement("img");
   img.src = theme.imageurl;
 
-  // ✅ Default theme (00_)
+  const saved = localStorage.getItem("timer_theme_image");
+
+  // ✅ Default theme (always visible border)
   if(theme.name.startsWith("00")){
     img.style.outline = "2px solid white";
     img.style.outlineOffset = "-2px";
   }
 
-  // ✅ Selected theme
-  const saved = localStorage.getItem("timer_theme_image");
+  // ✅ Selected theme (stronger border)
   if(saved === theme.imageurl){
     img.style.outline = "3px solid white";
     img.style.outlineOffset = "-2px";
   }
 
-       // Store BOTH image + name (important for later)
-     img.onclick = () => {
+   // Store BOTH image + name (important for later)
+  img.onclick = () => {
 
-  if(theme.name.toLowerCase() === "default"){
-    localStorage.removeItem("timer_theme");
-    localStorage.removeItem("timer_theme_image");
-  } else {
-    localStorage.setItem("timer_theme", theme.name);
-    localStorage.setItem("timer_theme_image", theme.imageurl);
-  }
+    if(theme.name.toLowerCase().includes("default")){
+      localStorage.removeItem("timer_theme");
+      localStorage.removeItem("timer_theme_image");
+    } else {
+      localStorage.setItem("timer_theme", theme.name);
+      localStorage.setItem("timer_theme_image", theme.imageurl);
+    }
 
-  window.location.href = "https://etl-1234.github.io/Timer/setup.html";
-};
+    window.location.href = "https://etl-1234.github.io/Timer/setup.html";
+  };
 
-    grid.appendChild(img);
-  });
+  grid.appendChild(img);
+}); 
 
 }
 

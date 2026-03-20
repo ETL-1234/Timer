@@ -93,7 +93,12 @@ if(saved === theme.imageurl){
 }
 
     const img = document.createElement("img");
-    img.src = theme.imageurl;
+img.src = theme.imageurl;
+
+// Detect default theme
+if(theme.name.startsWith("00")){
+  img.style.border = "2px solid white";
+}
 
        // Store BOTH image + name (important for later)
      img.onclick = () => {

@@ -214,6 +214,7 @@ const SUPABASE_KEY = "sb_publishable_VZiTsc0JGVx6tVf2Zu-9uQ_-FwjGpQW";
 let sounds = [];
 let index = 0;
 let audio = null;
+let audioTimeout = null; // ✅ controls preview limit
 
 // LOAD DATA
 async function loadSounds(){

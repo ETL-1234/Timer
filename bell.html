@@ -293,10 +293,26 @@ document.getElementById("right").onclick = () => {
 
 // PLAY
 document.getElementById("playBtn").onclick = () => {
-  if(audio){
-    audio.currentTime = 0;
-    audio.play().catch(()=>{});
+
+  if(!audio) return;
+
+  // ✅ STOP any previous audio first
+  audio.pause();
+  audio.currentTime = 0;
+
+  // ✅ CLEAR previous timer
+  if(audioTimeout){
+    clearTimeout(audioTimeout);
   }
+
+  // ▶️ PLAY
+  audio.play().catch(()=>{});
+
+  // ⏱ LIMIT playback (6 seconds)
+  audioTimeout = setTimeout(() => {
+    audio.pause();
+    audio.currentTime = 0;
+  }, 6000);
 
   // optional vibration
   if(navigator.vibrate) navigator.vibrate(20);

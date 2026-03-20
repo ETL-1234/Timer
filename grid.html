@@ -85,6 +85,13 @@ async function loadThemes(){
 
   data.forEach(theme => {
 
+    const saved = localStorage.getItem("timer_theme_image");
+
+if(saved === theme.imageurl){
+  img.style.outline = "2px solid white";
+  img.style.outlineOffset = "2px";
+}
+
     const img = document.createElement("img");
     img.src = theme.imageurl;
 

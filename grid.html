@@ -38,15 +38,6 @@ h2{
   gap:12px;
 }
 
-.grid img{
-  width:100%;
-  aspect-ratio:1/1;
-  object-fit:cover;
-  cursor:pointer;
-  border-radius:12px;
-  transition:transform .2s ease, opacity .2s ease;
-}
-
   .grid img{
   width:100%;
   aspect-ratio:1/1;
@@ -54,7 +45,6 @@ h2{
   cursor:pointer;
   border-radius:12px;
   transition:transform .2s ease, opacity .2s ease;
-
   border:2px solid transparent; /* 👈 important */
 }
 
@@ -109,9 +99,8 @@ async function loadThemes(){
 
   // ✅ Selected theme (stronger border)
   if(saved === theme.imageurl){
-    img.style.outline = "3px solid white";
-    img.style.outlineOffset = "-2px";
-  }
+  img.style.border = "3px solid white";
+}
 
    // Store BOTH image + name (important for later)
 img.onclick = () => {

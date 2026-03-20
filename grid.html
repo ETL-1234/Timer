@@ -97,7 +97,8 @@ img.src = theme.imageurl;
 
 // Detect default theme
 if(theme.name.startsWith("00")){
-  img.style.border = "2px solid white";
+  img.style.outline = "2px solid white";
+  img.style.outlineOffset = "-2px";
 }
 
        // Store BOTH image + name (important for later)

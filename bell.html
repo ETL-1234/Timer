@@ -258,8 +258,19 @@ async function loadSounds(){
 // RENDER
 function render(){
 
+  // ✅ STOP any currently playing audio
+if(audio){
+  audio.pause();
+  audio.currentTime = 0;
+}
+
+if(audioTimeout){
+  clearTimeout(audioTimeout);
+}
+
   const sound = sounds[index];
 
+  
   document.getElementById("image").src = sound.imageurl;
   document.getElementById("name").innerText = sound.name;
  document.getElementById("description").innerHTML = formatDescription(sound.description);

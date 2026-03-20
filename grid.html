@@ -90,21 +90,21 @@ async function loadThemes(){
 
   data.forEach(theme => {
 
-    const saved = localStorage.getItem("timer_theme_image");
+  const img = document.createElement("img");
+  img.src = theme.imageurl;
 
-if(saved === theme.imageurl){
-  img.style.outline = "2px solid white";
-  img.style.outlineOffset = "2px";
-}
+  // ✅ Default theme (00_)
+  if(theme.name.startsWith("00")){
+    img.style.outline = "2px solid white";
+    img.style.outlineOffset = "-2px";
+  }
 
-    const img = document.createElement("img");
-img.src = theme.imageurl;
-
-// Detect default theme
-if(theme.name.startsWith("00")){
-  img.style.outline = "2px solid white";
-  img.style.outlineOffset = "-2px";
-}
+  // ✅ Selected theme
+  const saved = localStorage.getItem("timer_theme_image");
+  if(saved === theme.imageurl){
+    img.style.outline = "3px solid white";
+    img.style.outlineOffset = "-2px";
+  }
 
        // Store BOTH image + name (important for later)
      img.onclick = () => {

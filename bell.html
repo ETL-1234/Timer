@@ -256,39 +256,26 @@ async function loadSounds(){
 }
   
 // RENDER
-function render(){
+  function render(){
 
-  // ✅ STOP any currently playing audio
-if(audio){
- function fadeOut(audio, duration = 800){
-  const step = 50;
-  const steps = duration / step;
-  const volumeStep = audio.volume / steps;
+  // ✅ STOP previous audio cleanly
+  if(audio){
+    audio.pause();
+    audio.currentTime = 0;
+  }
 
-  const fade = setInterval(()=>{
-    if(audio.volume > volumeStep){
-      audio.volume -= volumeStep;
-    } else {
-      audio.pause();
-      audio.currentTime = 0;
-      audio.volume = 1;
-      clearInterval(fade);
-    }
-  }, step);
-}
-
-if(audioTimeout){
-  clearTimeout(audioTimeout);
-}
+  if(audioTimeout){
+    clearTimeout(audioTimeout);
+  }
 
   const sound = sounds[index];
 
-  
+  // ✅ Update UI (this is what was breaking)
   document.getElementById("image").src = sound.imageurl;
   document.getElementById("name").innerText = sound.name;
- document.getElementById("description").innerHTML = formatDescription(sound.description);
+  document.getElementById("description").innerHTML = formatDescription(sound.description);
 
-  // preload audio
+  // ✅ Prepare audio
   audio = new Audio(sound.mp3url);
   audio.preload = "auto";
 }

@@ -114,26 +114,18 @@ async function loadThemes(){
   }
 
    // Store BOTH image + name (important for later)
-  img.onclick = () => {
+img.onclick = () => {
 
-    // Default theme (subtle border)
-if(theme.name.toLowerCase().includes("default")){
-  img.style.border = "2px solid rgba(255,255,255,0.5)";
-}
+  if(theme.name.toLowerCase().includes("default")){
+    localStorage.removeItem("timer_theme");
+    localStorage.removeItem("timer_theme_image");
+  } else {
+    localStorage.setItem("timer_theme", theme.name);
+    localStorage.setItem("timer_theme_image", theme.imageurl);
+  }
 
-// Selected theme (stronger border)
-if(saved === theme.imageurl){
-  img.style.border = "3px solid white";
-}
-      localStorage.removeItem("timer_theme");
-      localStorage.removeItem("timer_theme_image");
-    } else {
-      localStorage.setItem("timer_theme", theme.name);
-      localStorage.setItem("timer_theme_image", theme.imageurl);
-    }
-
-    window.location.href = "https://etl-1234.github.io/Timer/setup.html";
-  };
+  window.location.href = "https://etl-1234.github.io/Timer/setup.html";
+};
 
   grid.appendChild(img);
 }); 

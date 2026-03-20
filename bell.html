@@ -260,8 +260,7 @@ async function loadSounds(){
 
   // ✅ STOP previous audio cleanly
   if(audio){
-    audio.pause();
-    audio.currentTime = 0;
+    fadeOut(audio, 300);
   }
 
   if(audioTimeout){
@@ -317,14 +316,13 @@ function fadeOut(audio, duration = 1500){
   }, stepTime);
 }
   
-// PLAY
+// PLAY BUTTON
 document.getElementById("playBtn").onclick = () => {
 
   if(!audio) return;
 
   // ✅ STOP any previous audio first
-  audio.pause();
-  audio.currentTime = 0;
+  fadeOut(audio, 300);
 
   // ✅ CLEAR previous timer
   if(audioTimeout){

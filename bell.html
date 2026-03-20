@@ -260,8 +260,21 @@ function render(){
 
   // ✅ STOP any currently playing audio
 if(audio){
-  audio.pause();
-  audio.currentTime = 0;
+ function fadeOut(audio, duration = 800){
+  const step = 50;
+  const steps = duration / step;
+  const volumeStep = audio.volume / steps;
+
+  const fade = setInterval(()=>{
+    if(audio.volume > volumeStep){
+      audio.volume -= volumeStep;
+    } else {
+      audio.pause();
+      audio.currentTime = 0;
+      audio.volume = 1;
+      clearInterval(fade);
+    }
+  }, step);
 }
 
 if(audioTimeout){

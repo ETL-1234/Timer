@@ -81,6 +81,11 @@ async function loadThemes(){
   );
 
   const data = await res.json();
+  data.sort((a,b)=>{
+  const getNum = name => parseInt(name.substring(0,2)) || 99;
+  return getNum(a.name) - getNum(b.name);
+});
+  
   const grid = document.getElementById("grid");
 
   data.forEach(theme => {

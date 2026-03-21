@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Meditation Timer Open</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --text-color:#ffffff;
+  --bg-color:#232f52;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg-color);
+  color:var(--text-color);
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  overflow:hidden;
+}
+
+/* BACKGROUND IMAGE */
+#bgImage{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  z-index:-3;
+}
+
+/* OVERLAY */
+#overlay{
+  position:fixed;
+  inset:0;
+  z-index:-2;
+}
+
+/* TIMER */
+#timer{
+  font-size:clamp(40px,10vw,80px);
+  font-weight:600;
+  transition:opacity 1.8s ease;
+}
+
+#controls{
+  margin-top:80px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:12px;
+  transition:opacity 1.8s ease;
+}
+
+.fade-out{
+  opacity:0;
+}
+
+/* COMPLETE OVERLAY */
+.complete-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.4);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:10;
+  opacity:0;
+  transition: opacity 1.5s ease;
+  pointer-events:none;
+}
+
+.complete-overlay.show{
+  opacity:1;
+  pointer-events:auto;
+}
+
+.complete-content{
+  text-align:center;
+  color:rgba(255,255,255,0.9);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 1.2s ease, transform 1.2s ease;
+}
+
+.complete-overlay.show .complete-content {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.complete-title{
+  font-size:42px;
+  font-weight:600;
+  margin-bottom:10px;
+}
+
+.complete-sub{
+  font-size:16px;
+  opacity:0.8;
+  margin-bottom:80px; /* space for icon below */
+}
+
+/* JOURNAL BUTTON */
+#journalBtn{
+  width:auto;
+  height:auto;
+  border:none;
+  background:none;
+  cursor:pointer;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+#journalBtn img{
+  width:75px;
+  height:75px;
+  object-fit:contain;
+  opacity:0.4; /* slightly transparent icon */
+}
+
+/* BUTTON */
+#toggleBtn,
+#editBtn{
+  padding:14px 30px;
+  width:160px;
+  border-radius:14px;
+  border:none;
+  background:rgba(255,255,255,0.2);
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<img id="bgImage" src="">
+<div id="overlay"></div>
+
+<div>
+  <div id="timer">00:00</div>
+  <div id="controls">
+    <button id="toggleBtn">Start</button>
+    <button id="editBtn">Edit Settings</button>
+  </div>
+</div>
+
+<div id="completeOverlay" class="complete-overlay hidden">
+  <div class="complete-content">
+    <div class="complete-title">Session complete</div>
+    <div class="complete-sub">Tap to return to settings</div>
+    <button id="journalBtn">
+      <img src="https://tppyzexttkuvcobbbmaz.supabase.co/storage/v1/object/public/Other/journal_pen_white.png" />
+    </button>
+  </div>
+</div> 
+
+<script>
+const SUPABASE_URL = "https://tppyzexttkuvcobbbmaz.supabase.co";
+const SUPABASE_KEY = "sb_publishable_VZiTsc0JGVx6tVf2Zu-9uQ_-FwjGpQW";
+
+// STATE
+let totalSeconds = 0;
+let remaining = 0;
+let interval = null;
+let paused = false;
+
+let endAudio = null;
+let intervalAudio = null;
+
+let lastInteraction = Date.now();
+let hasStarted = false;
+
+// ELEMENTS
+const timerEl = document.getElementById("timer");
+const toggleBtn = document.getElementById("toggleBtn");
+const controls = document.getElementById("controls");
+
+// LOAD SETTINGS
+function loadSettings(){
+  const duration = localStorage.getItem("timer_duration");
+
+  if(duration && duration.includes(":")){
+    const [min, sec] = duration.split(":").map(Number);
+    totalSeconds = min * 60 + sec;
+  } else {
+    totalSeconds = 300; // default 5 min
+  }
+
+  remaining = totalSeconds;
+  
+  const endBell = localStorage.getItem("timer_endbell_url");
+  const intervalBell = localStorage.getItem("timer_interval_url");
+  const themeName = localStorage.getItem("timer_theme");
+
+  if(endBell) endAudio = new Audio(endBell);
+  if(intervalBell) intervalAudio = new Audio(intervalBell);
+
+  applyTheme(themeName);
+}
+
+// APPLY THEME
+async function applyTheme(name){
+  if(!name){
+    document.body.style.background = "#232f52";
+    return;
+  }
+
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/selfpracticetheme?name=eq.${name}`,{
+      headers:{
+        apikey:SUPABASE_KEY,
+        Authorization:`Bearer ${SUPABASE_KEY}`
+      }
+  });
+
+  const data = await res.json();
+  const theme = data[0];
+  if(!theme) return;
+
+  if(theme.text_color) document.documentElement.style.setProperty("--text-color", theme.text_color);
+  if(theme.imageurl) document.getElementById("bgImage").src = theme.imageurl;
+  if(theme.bg_start_gradient && theme.bg_end_gradient){
+    document.body.style.background = `linear-gradient(${theme.bg_start_gradient}, ${theme.bg_end_gradient})`;
+  }
+  if(theme.bg_overlay_color){
+    document.getElementById("overlay").style.background = theme.bg_overlay_color;
+  }
+}
+
+// FORMAT TIME
+function formatTime(sec){
+  const m = Math.floor(sec/60).toString().padStart(2,'0');
+  const s = (sec%60).toString().padStart(2,'0');
+  return `${m}:${s}`;
+}
+
+// COUNTDOWN START
+async function startCountdown(){
+  for(let i=3;i>0;i--){
+    timerEl.innerText = i;
+    await new Promise(r=>setTimeout(r,1000));
+  }
+}
+
+// START TIMER
+function startTimer(){
+  hasStarted = true;
+
+  interval = setInterval(()=>{
+    if(!paused){
+      remaining--;
+      timerEl.innerText = formatTime(remaining);
+
+      // INTERVAL BELL
+      const intervalMin = parseInt(localStorage.getItem("timer_interval"));
+      if(intervalMin && intervalAudio){
+        if(remaining % (intervalMin*60) === 0){
+          intervalAudio.currentTime = 0;
+          intervalAudio.play().catch(()=>{});
+        }
+      }
+
+      // END
+      if(remaining <=0){
+        clearInterval(interval);
+        interval = null; // important to reset for toggle logic
+
+        if(endAudio){
+          endAudio.currentTime = 0;
+          endAudio.play().catch(()=>{});
+        }
+
+        toggleBtn.innerText = "Done";
+
+        // fade out timer & buttons
+        timerEl.classList.add("fade-out");
+        controls.classList.add("fade-out");
+
+        // SHOW OVERLAY with 1.5s delay
+        setTimeout(()=>{
+          const overlay = document.getElementById("completeOverlay");
+          overlay.classList.remove("hidden");
+          overlay.classList.add("show");
+        },1500);
+      }
+    }
+  },1000);
+}
+
+// BUTTONS
+toggleBtn.onclick = async () => {
+  lastInteraction = Date.now();
+
+  if(!interval){
+    toggleBtn.innerText = "Pause";
+    await startCountdown();
+    timerEl.innerText = formatTime(remaining);
+    startTimer();
+  } else {
+    paused = !paused;
+    toggleBtn.innerText = paused ? "Resume" : "Pause";
+  }
+};
+
+document.getElementById("editBtn").onclick = () => {
+  window.location.href = "https://etl-1234.github.io/Timer/setupopen.html";
+};
+
+// TAP OVERLAY → BACK TO SETTINGS
+document.getElementById("completeOverlay").onclick = () => {
+  window.location.href = "https://etl-1234.github.io/Timer/setupopen.html";
+};
+
+// JOURNAL BUTTON
+document.getElementById("journalBtn").onclick = (e)=>{
+  e.stopPropagation();
+  window.location.href = "https://etl-1234.github.io/Journal/journalpage.html";
+};
+
+// TAP TO SHOW
+document.body.addEventListener("click", ()=>{
+  lastInteraction = Date.now();
+  timerEl.classList.remove("fade-out");
+  controls.classList.remove("fade-out");
+});
+
+setInterval(()=>{
+  if(hasStarted && !paused && Date.now()-lastInteraction>5000){
+    timerEl.classList.add("fade-out");
+    controls.classList.add("fade-out");
+  }
+},1000);
+
+// INIT
+loadSettings();
+timerEl.innerText = formatTime(remaining);
+
+</script>
+
+</body>
+</html>

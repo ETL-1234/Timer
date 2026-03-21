@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Set Interval Open</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg-color:#232f52;
+  --text-color:#ffffff;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg-color);
+  color:var(--text-color);
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+
+/* PICKER */
+
+.column{
+  height:220px;
+  width:120px; /* 👈 match highlight width */
+  overflow-y:scroll;
+  scroll-snap-type:y mandatory;
+  -ms-overflow-style:none;
+  scrollbar-width:none;
+}
+
+.column::-webkit-scrollbar{
+  display:none;
+}
+
+.item{
+  height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:26px;
+  opacity:.4;
+  scroll-snap-align:center;
+  transition:.2s;
+}
+
+.item.active{
+  opacity:1;
+  font-weight:600;
+  transform:scale(1.05);
+}
+
+/* HIGHLIGHT */
+
+.highlight{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
+  width:120px;
+  height:44px;
+  border-top:1px solid rgba(255,255,255,0.2);
+  border-bottom:1px solid rgba(255,255,255,0.2);
+  pointer-events:none;
+}
+
+/* LABEL */
+
+.label{
+  margin-top:10px;
+  opacity:.6;
+  font-style:italic;
+}
+
+/* BUTTON */
+
+#setBtn{
+  margin-top:40px;
+  padding:14px 30px;
+  width:120px; /* 👈 fixed width */
+  border-radius:14px;
+  border:none;
+  background:rgba(255,255,255,0.15);
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div style="position:relative">
+  <div id="minutes" class="column"></div>
+  <div class="highlight"></div>
+</div>
+
+<div class="label">minutes</div>
+
+<button id="setBtn">Set</button>
+
+<script>
+const col = document.getElementById("minutes");
+
+const itemHeight = 44;
+const visibleCount = 5;
+const spacerCount = Math.floor(visibleCount / 2);
+
+// CREATE ITEMS + SPACERS
+function createItems(){
+
+  // TOP SPACERS
+  for(let i=0;i<spacerCount;i++){
+    const spacer = document.createElement("div");
+    spacer.style.height = itemHeight + "px";
+    col.appendChild(spacer);
+  }
+
+  // VALUES
+  for(let i=0;i<=59;i++){
+    const el = document.createElement("div");
+    el.className = "item";
+    el.innerText = i === 0 ? "none" : String(i).padStart(2,"0");
+    col.appendChild(el);
+  }
+
+  // BOTTOM SPACERS
+  for(let i=0;i<spacerCount;i++){
+    const spacer = document.createElement("div");
+    spacer.style.height = itemHeight + "px";
+    col.appendChild(spacer);
+  }
+}
+
+createItems();
+
+
+// ✅ CENTER-BASED SCROLL
+function scrollToValue(value){
+  const offset = col.offsetHeight / 2 - itemHeight / 2;
+  col.scrollTop = (value + spacerCount) * itemHeight - offset;
+}
+
+
+// 🎯 DEFAULT = ALWAYS 5
+scrollToValue(5);
+
+
+// ACTIVE STATE
+function updateActive(){
+  const items = col.querySelectorAll(".item");
+  const center = col.scrollTop + col.offsetHeight/2;
+
+  items.forEach(item=>{
+    const offset = item.offsetTop + item.offsetHeight/2;
+    const distance = Math.abs(center - offset);
+    item.classList.toggle("active", distance < 25);
+  });
+}
+
+
+// 🧲 SNAP TO CENTER
+let scrollTimeout;
+
+col.addEventListener("scroll", () => {
+  updateActive();
+
+  clearTimeout(scrollTimeout);
+
+  scrollTimeout = setTimeout(() => {
+    const offset = col.offsetHeight / 2 - itemHeight / 2;
+    const raw = Math.round((col.scrollTop + offset) / itemHeight);
+    const target = raw * itemHeight - offset;
+
+    col.scrollTo({
+      top: target,
+      behavior: "smooth"
+    });
+
+  }, 80);
+});
+
+
+// INITIAL STATE
+setTimeout(updateActive, 50);
+
+
+// GET VALUE (FIXED)
+function getValue(){
+  const offset = col.offsetHeight / 2 - itemHeight / 2;
+  const raw = Math.round((col.scrollTop + offset) / itemHeight);
+  return Math.max(0, Math.min(59, raw - spacerCount));
+}
+
+
+// SAVE
+document.getElementById("setBtn").onclick = () => {
+
+  const val = getValue();
+
+  if(val === 0){
+    localStorage.setItem("timer_interval", "none");
+  } else {
+    localStorage.setItem("timer_interval", `${val}`);
+  }
+
+  window.location.href = "https://etl-1234.github.io/Timer/setupopen.html";
+};
+
+</script>
+
+</body>
+</html>

@@ -202,7 +202,7 @@ function loadSettings(){
 
   const duration = localStorage.getItem("timer_duration");
 
-if(duration){
+if(duration && duration.includes(":")){
   const [min, sec] = duration.split(":").map(Number);
   totalSeconds = min * 60 + sec;
 } else {

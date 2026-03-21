@@ -133,11 +133,31 @@ const secondsCol = document.getElementById("seconds");
 
 // CREATE ITEMS
 function createItems(container, max){
+
+  const visibleCount = 5; // number of visible rows
+  const itemHeight = 44;
+  const spacerCount = Math.floor(visibleCount / 2);
+
+  // 🔝 TOP SPACERS
+  for(let i = 0; i < spacerCount; i++){
+    const spacer = document.createElement("div");
+    spacer.style.height = itemHeight + "px";
+    container.appendChild(spacer);
+  }
+
+  // 🔢 ACTUAL VALUES
   for(let i=0;i<=max;i++){
     const el = document.createElement("div");
     el.className = "item";
     el.innerText = String(i).padStart(2,"0");
     container.appendChild(el);
+  }
+
+  // 🔻 BOTTOM SPACERS
+  for(let i = 0; i < spacerCount; i++){
+    const spacer = document.createElement("div");
+    spacer.style.height = itemHeight + "px";
+    container.appendChild(spacer);
   }
 }
 

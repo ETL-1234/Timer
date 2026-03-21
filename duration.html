@@ -203,8 +203,8 @@ updateActive(secondsCol);
 
 // GET SELECTED VALUE
 function getValue(container){
-  const offset = itemHeight * spacerCount;
-  return Math.round((container.scrollTop - offset) / itemHeight);
+  const raw = Math.round(container.scrollTop / itemHeight);
+  return Math.max(0, Math.min(59, raw - spacerCount));
 }
 
 // SAVE

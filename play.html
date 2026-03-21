@@ -115,7 +115,8 @@ let endAudio = null;
 let intervalAudio = null;
 
 let lastInteraction = Date.now();
-
+let hasStarted = false;
+  
 // ELEMENTS
 const timerEl = document.getElementById("timer");
 const toggleBtn = document.getElementById("toggleBtn");
@@ -262,7 +263,6 @@ toggleBtn.onclick = async () => {
 // AUTO FADE UI
 setInterval(()=>{
   if(Date.now() - lastInteraction > 5000){
-    let hasStarted = false;
     timerEl.classList.add("fade-out");
     controls.classList.add("fade-out");
   }

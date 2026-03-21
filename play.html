@@ -212,6 +212,8 @@ async function startCountdown(){
 // START TIMER
 function startTimer(){
 
+   hasStarted = true;
+
   interval = setInterval(()=>{
   if(hasStarted && Date.now() - lastInteraction > 5000){
     timerEl.classList.add("fade-out");
@@ -253,7 +255,6 @@ toggleBtn.onclick = async () => {
   lastInteraction = Date.now();
 
   if(!interval){
-  hasStarted = true;
   toggleBtn.innerText = "Pause";
   await startCountdown();
   startTimer();

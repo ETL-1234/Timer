@@ -97,6 +97,9 @@ body{
 .complete-content{
   text-align:center;
   color:rgba(255,255,255,0.9);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
 }
 
 .complete-title{
@@ -108,27 +111,26 @@ body{
 .complete-sub{
   font-size:16px;
   opacity:0.8;
-  margin-bottom:25px;
+  margin-bottom:40px; /* space for icon below */
 }
 
 /* JOURNAL BUTTON */
-
 #journalBtn{
-  width:60px;
-  height:60px;
-  border-radius:50%;
+  width:auto;
+  height:auto;
   border:none;
-  background:rgba(255,255,255,0.2);
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  background:none;  /* remove background */
   cursor:pointer;
+  display:flex;
+  justify-content:center;
+  align-items:center;
 }
 
 #journalBtn img{
-  width:60%;
-  height:60%;
+  width:60px;
+  height:60px;
   object-fit:contain;
+  opacity:0.9; /* slightly transparent icon */
 }
 
 /* BUTTON */

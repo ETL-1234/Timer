@@ -41,17 +41,30 @@ body{
   
 /* BUTTONS */
 
-.option-btn{
-  width:100%;
-  max-width:420px;
-  padding:18px;
-  border-radius:18px;
-  border:none;
-  background:rgba(255,255,255,0.08);
-  color:white;
-  font-size:18px;
-  text-align:left;
-  cursor:pointer;
+.option-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 420px;
+  padding: 18px;
+  border-radius: 18px;
+  border: none;
+  background: rgba(255,255,255,0.08);
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.option-btn .label {
+  flex: 0 0 140px; /* all labels take same width */
+}
+
+.option-btn .value {
+  flex: 1 1 auto;
+  text-align: left; /* chosen value aligns left starting after label */
+  opacity: 0.6;
+  font-style: italic;
 }
 
 .option-btn span{

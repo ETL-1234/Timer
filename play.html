@@ -267,6 +267,13 @@ document.body.addEventListener("click", ()=>{
   controls.classList.remove("fade-out");
 });
 
+setInterval(()=>{
+  if(hasStarted && Date.now() - lastInteraction > 5000){
+    timerEl.classList.add("fade-out");
+    controls.classList.add("fade-out");
+  }
+},1000);
+  
 // INIT
 loadSettings();
 timerEl.innerText = formatTime(remaining);

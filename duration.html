@@ -203,7 +203,9 @@ updateActive(secondsCol);
 
 // GET SELECTED VALUE
 function getValue(container){
-  return Math.round(container.scrollTop / 44);
+  const itemHeight = 44;
+  const offset = itemHeight * 2;
+  return Math.round((container.scrollTop - offset) / itemHeight);
 }
 
 // SAVE

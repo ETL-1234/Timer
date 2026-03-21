@@ -12,11 +12,7 @@
   --bg-color:#232f52;
 }
 
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
+*{margin:0;padding:0;box-sizing:border-box;}
 
 body{
   font-family:'Inter',sans-serif;
@@ -30,7 +26,6 @@ body{
   overflow:hidden;
 }
 
-/* BACKGROUND IMAGE */
 #bgImage{
   position:fixed;
   inset:0;
@@ -40,14 +35,12 @@ body{
   z-index:-3;
 }
 
-/* OVERLAY */
 #overlay{
   position:fixed;
   inset:0;
   z-index:-2;
 }
 
-/* TIMER */
 #timer{
   font-size:clamp(40px,10vw,80px);
   font-weight:600;
@@ -63,11 +56,21 @@ body{
   transition:opacity 1.8s ease;
 }
 
-.fade-out{
-  opacity:0;
+.fade-out{opacity:0;}
+
+button{
+  padding:14px 30px;
+  width:160px;
+  border-radius:14px;
+  border:none;
+  background:rgba(255,255,255,0.2);
+  color:white;
+  font-size:16px;
+  cursor:pointer;
 }
 
 /* COMPLETE OVERLAY */
+
 .complete-overlay{
   position:fixed;
   inset:0;
@@ -88,11 +91,10 @@ body{
 
 .complete-content{
   text-align:center;
-  color:rgba(255,255,255,0.9);
   display:flex;
   flex-direction:column;
   align-items:center;
-  opacity: 0;
+  opacity:0;
   transform: scale(0.95);
   transition: opacity 1.2s ease, transform 1.2s ease;
 }
@@ -104,48 +106,19 @@ body{
 
 .complete-title{
   font-size:42px;
-  font-weight:600;
   margin-bottom:10px;
 }
 
 .complete-sub{
   font-size:16px;
   opacity:0.8;
-  margin-bottom:80px; /* space for icon below */
-}
-
-/* JOURNAL BUTTON */
-#journalBtn{
-  width:auto;
-  height:auto;
-  border:none;
-  background:none;
-  cursor:pointer;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+  margin-bottom:80px;
 }
 
 #journalBtn img{
   width:75px;
-  height:75px;
-  object-fit:contain;
-  opacity:0.4; /* slightly transparent icon */
+  opacity:0.4;
 }
-
-/* BUTTON */
-#toggleBtn,
-#editBtn{
-  padding:14px 30px;
-  width:160px;
-  border-radius:14px;
-  border:none;
-  background:rgba(255,255,255,0.2);
-  color:white;
-  font-size:16px;
-  cursor:pointer;
-}
-
 </style>
 </head>
 
@@ -159,10 +132,11 @@ body{
   <div id="controls">
     <button id="toggleBtn">Start</button>
     <button id="editBtn">Edit Settings</button>
+    <button id="finishBtn">Session finished</button>
   </div>
 </div>
 
-<div id="completeOverlay" class="complete-overlay hidden">
+<div id="completeOverlay" class="complete-overlay">
   <div class="complete-content">
     <div class="complete-title">Session complete</div>
     <div class="complete-sub">Tap to return to settings</div>
@@ -170,23 +144,21 @@ body{
       <img src="https://tppyzexttkuvcobbbmaz.supabase.co/storage/v1/object/public/Other/journal_pen_white.png" />
     </button>
   </div>
-</div> 
+</div>
 
 <script>
 const SUPABASE_URL = "https://tppyzexttkuvcobbbmaz.supabase.co";
 const SUPABASE_KEY = "sb_publishable_VZiTsc0JGVx6tVf2Zu-9uQ_-FwjGpQW";
 
 // STATE
-let totalSeconds = 0;
-let remaining = 0;
+let seconds = 0;
 let interval = null;
 let paused = false;
+let hasStarted = false;
 
-let endAudio = null;
 let intervalAudio = null;
 
 let lastInteraction = Date.now();
-let hasStarted = false;
 
 // ELEMENTS
 const timerEl = document.getElementById("timer");
@@ -195,23 +167,13 @@ const controls = document.getElementById("controls");
 
 // LOAD SETTINGS
 function loadSettings(){
-  const duration = localStorage.getItem("timer_duration");
+  const intervalBell = localStorage.getItem("timeropen_intervalbell_url");
+  const intervalDuration = localStorage.getItem("timeropen_intervalduration");
+  const themeName = localStorage.getItem("timeropen_theme");
 
-  if(duration && duration.includes(":")){
-    const [min, sec] = duration.split(":").map(Number);
-    totalSeconds = min * 60 + sec;
-  } else {
-    totalSeconds = 300; // default 5 min
-  }
-
-  remaining = totalSeconds;
-  
-  const endBell = localStorage.getItem("timer_endbell_url");
-  const intervalBell = localStorage.getItem("timer_interval_url");
-  const themeName = localStorage.getItem("timer_theme");
-
-  if(endBell) endAudio = new Audio(endBell);
   if(intervalBell) intervalAudio = new Audio(intervalBell);
+
+  window.intervalDurationValue = intervalDuration;
 
   applyTheme(themeName);
 }
@@ -224,10 +186,10 @@ async function applyTheme(name){
   }
 
   const res = await fetch(`${SUPABASE_URL}/rest/v1/selfpracticetheme?name=eq.${name}`,{
-      headers:{
-        apikey:SUPABASE_KEY,
-        Authorization:`Bearer ${SUPABASE_KEY}`
-      }
+    headers:{
+      apikey:SUPABASE_KEY,
+      Authorization:`Bearer ${SUPABASE_KEY}`
+    }
   });
 
   const data = await res.json();
@@ -236,12 +198,7 @@ async function applyTheme(name){
 
   if(theme.text_color) document.documentElement.style.setProperty("--text-color", theme.text_color);
   if(theme.imageurl) document.getElementById("bgImage").src = theme.imageurl;
-  if(theme.bg_start_gradient && theme.bg_end_gradient){
-    document.body.style.background = `linear-gradient(${theme.bg_start_gradient}, ${theme.bg_end_gradient})`;
-  }
-  if(theme.bg_overlay_color){
-    document.getElementById("overlay").style.background = theme.bg_overlay_color;
-  }
+  if(theme.bg_overlay_color) document.getElementById("overlay").style.background = theme.bg_overlay_color;
 }
 
 // FORMAT TIME
@@ -251,67 +208,34 @@ function formatTime(sec){
   return `${m}:${s}`;
 }
 
-// COUNTDOWN START
-async function startCountdown(){
-  for(let i=3;i>0;i--){
-    timerEl.innerText = i;
-    await new Promise(r=>setTimeout(r,1000));
-  }
-}
-
 // START TIMER
 function startTimer(){
   hasStarted = true;
 
   interval = setInterval(()=>{
     if(!paused){
-      remaining--;
-      timerEl.innerText = formatTime(remaining);
+      seconds++;
+      timerEl.innerText = formatTime(seconds);
 
       // INTERVAL BELL
-      const intervalMin = parseInt(localStorage.getItem("timer_interval"));
-      if(intervalMin && intervalAudio){
-        if(remaining % (intervalMin*60) === 0){
+      const intervalMin = parseInt(window.intervalDurationValue);
+
+      if(intervalMin && intervalMin > 0 && intervalAudio){
+        if(seconds % (intervalMin * 60) === 0){
           intervalAudio.currentTime = 0;
           intervalAudio.play().catch(()=>{});
         }
-      }
-
-      // END
-      if(remaining <=0){
-        clearInterval(interval);
-        interval = null; // important to reset for toggle logic
-
-        if(endAudio){
-          endAudio.currentTime = 0;
-          endAudio.play().catch(()=>{});
-        }
-
-        toggleBtn.innerText = "Done";
-
-        // fade out timer & buttons
-        timerEl.classList.add("fade-out");
-        controls.classList.add("fade-out");
-
-        // SHOW OVERLAY with 1.5s delay
-        setTimeout(()=>{
-          const overlay = document.getElementById("completeOverlay");
-          overlay.classList.remove("hidden");
-          overlay.classList.add("show");
-        },1500);
       }
     }
   },1000);
 }
 
 // BUTTONS
-toggleBtn.onclick = async () => {
+toggleBtn.onclick = () => {
   lastInteraction = Date.now();
 
   if(!interval){
     toggleBtn.innerText = "Pause";
-    await startCountdown();
-    timerEl.innerText = formatTime(remaining);
     startTimer();
   } else {
     paused = !paused;
@@ -323,18 +247,35 @@ document.getElementById("editBtn").onclick = () => {
   window.location.href = "https://etl-1234.github.io/Timer/setupopen.html";
 };
 
-// TAP OVERLAY → BACK TO SETTINGS
+// FINISH BUTTON
+document.getElementById("finishBtn").onclick = () => {
+  showOverlay();
+};
+
+// SHOW OVERLAY
+function showOverlay(){
+  clearInterval(interval);
+
+  timerEl.classList.add("fade-out");
+  controls.classList.add("fade-out");
+
+  setTimeout(()=>{
+    document.getElementById("completeOverlay").classList.add("show");
+  },1000);
+}
+
+// OVERLAY CLICK
 document.getElementById("completeOverlay").onclick = () => {
   window.location.href = "https://etl-1234.github.io/Timer/setupopen.html";
 };
 
-// JOURNAL BUTTON
+// JOURNAL
 document.getElementById("journalBtn").onclick = (e)=>{
   e.stopPropagation();
   window.location.href = "https://etl-1234.github.io/Journal/journalpage.html";
 };
 
-// TAP TO SHOW
+// AUTO FADE UI
 document.body.addEventListener("click", ()=>{
   lastInteraction = Date.now();
   timerEl.classList.remove("fade-out");
@@ -350,7 +291,7 @@ setInterval(()=>{
 
 // INIT
 loadSettings();
-timerEl.innerText = formatTime(remaining);
+timerEl.innerText = formatTime(seconds);
 
 </script>
 

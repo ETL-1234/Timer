@@ -137,20 +137,17 @@ body{
 <script>
 
 // LOAD SAVED SETTINGS
-const duration = localStorage.getItem("timer_duration");
 const endBell = localStorage.getItem("timer_endbell");
 const interval = localStorage.getItem("timer_interval");
 const theme = localStorage.getItem("timer_theme");
 
 // ELEMENTS
-const durationText = document.getElementById("durationText");
 const endBellText = document.getElementById("endBellText");
 const intervalText = document.getElementById("intervalText");
 const themeText = document.getElementById("themeText");
 const startBtn = document.getElementById("startBtn");
 
 // APPLY VALUES
-if(duration) durationText.innerText = duration;
 if(endBell) endBellText.innerText = endBell;
 if(interval) intervalText.innerText = interval;
 if(theme) themeText.innerText = theme;

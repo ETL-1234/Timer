@@ -117,7 +117,17 @@ const controls = document.getElementById("controls");
 // LOAD SETTINGS
 function loadSettings(){
 
-  const duration = localStorage.getItem("timer_duration"); // seconds
+  const duration = localStorage.getItem("timer_duration");
+
+if(duration){
+  const [min, sec] = duration.split(":").map(Number);
+  totalSeconds = min * 60 + sec;
+} else {
+  totalSeconds = 300; // default 5 min
+}
+
+remaining = totalSeconds;
+  
   const endBell = localStorage.getItem("timer_endbell_url");
   const intervalBell = localStorage.getItem("timer_interval_url");
   const intervalMin = localStorage.getItem("timer_interval"); // minutes

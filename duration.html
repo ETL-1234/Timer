@@ -134,10 +134,6 @@ const secondsCol = document.getElementById("seconds");
 // CREATE ITEMS
 function createItems(container, max){
 
-  const visibleCount = 5; // number of visible rows
-  const itemHeight = 44;
-  const spacerCount = Math.floor(visibleCount / 2);
-
   // 🔝 TOP SPACERS
   for(let i = 0; i < spacerCount; i++){
     const spacer = document.createElement("div");
@@ -145,7 +141,7 @@ function createItems(container, max){
     container.appendChild(spacer);
   }
 
-  // 🔢 ACTUAL VALUES
+  // 🔢 VALUES
   for(let i=0;i<=max;i++){
     const el = document.createElement("div");
     el.className = "item";

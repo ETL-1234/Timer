@@ -345,6 +345,17 @@ toggleBtn.onclick = async () => {
   window.location.href = "https://etl-1234.github.io/Timer/setup.html";
 };
 
+  // TAP OVERLAY → BACK TO SETTINGS
+document.getElementById("completeOverlay").onclick = () => {
+  window.location.href = "https://etl-1234.github.io/Timer/setup.html";
+};
+
+// JOURNAL BUTTON
+document.getElementById("journalBtn").onclick = (e) => {
+  e.stopPropagation(); // prevent overlay click
+  window.location.href = "https://etl-1234.github.io/Journal/journalpage.html";
+};
+
 // TAP TO SHOW
 document.body.addEventListener("click", ()=>{
   lastInteraction = Date.now();

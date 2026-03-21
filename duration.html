@@ -189,8 +189,10 @@ minutesCol.addEventListener("scroll", ()=>updateActive(minutesCol));
 secondsCol.addEventListener("scroll", ()=>updateActive(secondsCol));
 
 // INITIAL STATE
-updateActive(minutesCol);
-updateActive(secondsCol);
+setTimeout(()=>{
+  updateActive(minutesCol);
+  updateActive(secondsCol);
+}, 50);
 
 // GET SELECTED VALUE
 function getValue(container){

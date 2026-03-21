@@ -140,9 +140,6 @@ remaining = totalSeconds;
   const intervalMin = localStorage.getItem("timer_interval"); // minutes
   const themeName = localStorage.getItem("timer_theme");
 
-  totalSeconds = duration ? parseInt(duration) : 600;
-  remaining = totalSeconds;
-
   if(endBell) endAudio = new Audio(endBell);
   if(intervalBell) intervalAudio = new Audio(intervalBell);
 

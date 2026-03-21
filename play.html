@@ -260,14 +260,6 @@ toggleBtn.onclick = async () => {
   window.location.href = "https://etl-1234.github.io/Timer/setup.html";
 };
 
-// AUTO FADE UI
-setInterval(()=>{
-  if(Date.now() - lastInteraction > 5000){
-    timerEl.classList.add("fade-out");
-    controls.classList.add("fade-out");
-  }
-},1000);
-
 // TAP TO SHOW
 document.body.addEventListener("click", ()=>{
   lastInteraction = Date.now();

@@ -162,8 +162,7 @@ createItems(secondsCol,59);
 
 // SCROLL TO DEFAULT OR SAVED
 function scrollToValue(container, value){
-  const itemHeight = 44;
-  const offset = itemHeight * 2; // matches spacer count
+  const offset = itemHeight * spacerCount;
   container.scrollTop = (value * itemHeight) + offset;
 }
 

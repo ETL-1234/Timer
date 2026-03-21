@@ -69,50 +69,15 @@ button{
   cursor:pointer;
 }
 
-/* COMPLETE OVERLAY */
+/* JOURNAL BUTTON */
 
-.complete-overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.4);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:10;
+#journalBtn{
+  margin-top:10px;
+  background:none;
+  border:none;
+  cursor:pointer;
   opacity:0;
-  transition: opacity 1.5s ease;
-  pointer-events:none;
-}
-
-.complete-overlay.show{
-  opacity:1;
-  pointer-events:auto;
-}
-
-.complete-content{
-  text-align:center;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  opacity:0;
-  transform: scale(0.95);
-  transition: opacity 1.2s ease, transform 1.2s ease;
-}
-
-.complete-overlay.show .complete-content {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.complete-title{
-  font-size:42px;
-  margin-bottom:10px;
-}
-
-.complete-sub{
-  font-size:16px;
-  opacity:0.8;
-  margin-bottom:80px;
+  transition:opacity 0.6s ease;
 }
 
 #journalBtn img{
@@ -132,17 +97,11 @@ button{
   <div id="controls">
     <button id="toggleBtn">Start</button>
     <button id="editBtn">Edit Settings</button>
-    <button id="finishBtn">Session finished</button>
-  </div>
-</div>
 
-<div id="completeOverlay" class="complete-overlay">
-  <div class="complete-content">
-    <div class="complete-title">Session complete</div>
-    <div class="complete-sub">Tap to return to settings</div>
     <button id="journalBtn">
       <img src="https://tppyzexttkuvcobbbmaz.supabase.co/storage/v1/object/public/Other/journal_pen_white.png" />
     </button>
+
   </div>
 </div>
 
@@ -164,6 +123,7 @@ let lastInteraction = Date.now();
 const timerEl = document.getElementById("timer");
 const toggleBtn = document.getElementById("toggleBtn");
 const controls = document.getElementById("controls");
+const journalBtn = document.getElementById("journalBtn");
 
 // LOAD SETTINGS
 function loadSettings(){
@@ -178,14 +138,16 @@ function loadSettings(){
   applyTheme(themeName);
 }
 
-// APPLY THEME
+// APPLY THEME (FIXED)
 async function applyTheme(name){
   if(!name){
     document.body.style.background = "#232f52";
     return;
   }
 
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/selfpracticetheme?name=eq.${name}`,{
+  const encodedName = encodeURIComponent(name);
+
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/selfpracticetheme?name=eq.${encodedName}`,{
     headers:{
       apikey:SUPABASE_KEY,
       Authorization:`Bearer ${SUPABASE_KEY}`
@@ -217,7 +179,6 @@ function startTimer(){
       seconds++;
       timerEl.innerText = formatTime(seconds);
 
-      // INTERVAL BELL
       const intervalMin = parseInt(window.intervalDurationValue);
 
       if(intervalMin && intervalMin > 0 && intervalAudio){
@@ -240,6 +201,13 @@ toggleBtn.onclick = () => {
   } else {
     paused = !paused;
     toggleBtn.innerText = paused ? "Resume" : "Pause";
+
+    // ✨ JOURNAL VISIBILITY
+    if(paused){
+      journalBtn.style.opacity = "1";
+    } else {
+      journalBtn.style.opacity = "0";
+    }
   }
 };
 
@@ -247,31 +215,8 @@ document.getElementById("editBtn").onclick = () => {
   window.location.href = "https://etl-1234.github.io/Timer/setupopen.html";
 };
 
-// FINISH BUTTON
-document.getElementById("finishBtn").onclick = () => {
-  showOverlay();
-};
-
-// SHOW OVERLAY
-function showOverlay(){
-  clearInterval(interval);
-
-  timerEl.classList.add("fade-out");
-  controls.classList.add("fade-out");
-
-  setTimeout(()=>{
-    document.getElementById("completeOverlay").classList.add("show");
-  },1000);
-}
-
-// OVERLAY CLICK
-document.getElementById("completeOverlay").onclick = () => {
-  window.location.href = "https://etl-1234.github.io/Timer/setupopen.html";
-};
-
-// JOURNAL
-document.getElementById("journalBtn").onclick = (e)=>{
-  e.stopPropagation();
+// JOURNAL NAVIGATION
+journalBtn.onclick = () => {
   window.location.href = "https://etl-1234.github.io/Journal/journalpage.html";
 };
 

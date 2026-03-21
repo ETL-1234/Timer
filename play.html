@@ -206,6 +206,11 @@ async function startCountdown(){
 function startTimer(){
 
   interval = setInterval(()=>{
+  if(hasStarted && Date.now() - lastInteraction > 5000){
+    timerEl.classList.add("fade-out");
+    controls.classList.add("fade-out");
+  }
+},1000);
 
     if(!paused){
       remaining--;

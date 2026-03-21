@@ -70,6 +70,65 @@ body{
   opacity:0;
 }
 
+  /* COMPLETE OVERLAY */
+
+.complete-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.4);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:10;
+  opacity:0;
+  transition: opacity 1.5s ease;
+}
+
+.complete-overlay.hidden{
+  pointer-events:none;
+}
+
+.complete-overlay.show{
+  opacity:1;
+}
+
+.complete-content{
+  text-align:center;
+  color:rgba(255,255,255,0.9);
+}
+
+.complete-title{
+  font-size:42px;
+  font-weight:600;
+  margin-bottom:10px;
+}
+
+.complete-sub{
+  font-size:16px;
+  opacity:0.8;
+  margin-bottom:25px;
+}
+
+/* JOURNAL BUTTON */
+
+#journalBtn{
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  border:none;
+  background:rgba(255,255,255,0.2);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
+
+#journalBtn img{
+  width:60%;
+  height:60%;
+  object-fit:contain;
+}
+
 /* BUTTON */
 
 #toggleBtn,

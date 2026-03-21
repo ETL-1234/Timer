@@ -317,17 +317,18 @@ function startTimer(){
 
   toggleBtn.innerText = "Done";
 
-  // ✨ SHOW OVERLAY
-  const overlay = document.getElementById("completeOverlay");
+ // SHOW OVERLAY with delay and fade out timer/buttons
+const overlay = document.getElementById("completeOverlay");
+
+// fade out timer and buttons
+timerEl.classList.add("fade-out");
+controls.classList.add("fade-out");
+
+// delay overlay by 1.5s
+setTimeout(()=>{
   overlay.classList.remove("hidden");
-
-  setTimeout(()=>{
-    overlay.classList.add("show");
-  },50);
- }
-}
-
-  },1000);
+  overlay.classList.add("show");
+}, 1500);
 }
 
 // BUTTONS

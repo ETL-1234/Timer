@@ -209,14 +209,9 @@ async function startCountdown(){
 // START TIMER
 function startTimer(){
 
-   hasStarted = true;
+  hasStarted = true;
 
   interval = setInterval(()=>{
-  if(hasStarted && Date.now() - lastInteraction > 5000){
-    timerEl.classList.add("fade-out");
-    controls.classList.add("fade-out");
-  }
-},1000);
 
     if(!paused){
       remaining--;
@@ -225,7 +220,7 @@ function startTimer(){
       // INTERVAL BELL
       const intervalMin = parseInt(localStorage.getItem("timer_interval"));
       if(intervalMin && intervalAudio){
-        if(remaining % (intervalMin*60) === 0){
+        if(remaining % (intervalMin * 60) === 0){
           intervalAudio.currentTime = 0;
           intervalAudio.play().catch(()=>{});
         }
@@ -243,7 +238,6 @@ function startTimer(){
     }
 
   },1000);
-
 }
 
 // BUTTONS

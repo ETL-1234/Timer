@@ -253,6 +253,7 @@ toggleBtn.onclick = async () => {
 // AUTO FADE UI
 setInterval(()=>{
   if(Date.now() - lastInteraction > 5000){
+    let hasStarted = false;
     timerEl.classList.add("fade-out");
     controls.classList.add("fade-out");
   }

@@ -106,11 +106,11 @@ async function loadThemes(){
 img.onclick = () => {
 
   if(theme.name.toLowerCase().includes("default")){
-    localStorage.removeItem("timer_theme");
-    localStorage.removeItem("timer_theme_image");
+    localStorage.removeItem("timeropen_theme");
+    localStorage.removeItem("timeropen_theme_image");
   } else {
-    localStorage.setItem("timer_theme", theme.name);
-    localStorage.setItem("timer_theme_image", theme.imageurl);
+    localStorage.setItem("timeropen_theme", theme.name);
+    localStorage.setItem("timeropen_theme_image", theme.imageurl);
   }
 
   window.location.href = "https://etl-1234.github.io/Timer/setupopen.html";

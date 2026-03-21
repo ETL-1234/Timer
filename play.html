@@ -241,9 +241,10 @@ toggleBtn.onclick = async () => {
   lastInteraction = Date.now();
 
   if(!interval){
-    toggleBtn.innerText = "Pause";
-    await startCountdown();
-    startTimer();
+  hasStarted = true;
+  toggleBtn.innerText = "Pause";
+  await startCountdown();
+  startTimer();
   } else {
     paused = !paused;
     toggleBtn.innerText = paused ? "Resume" : "Pause";

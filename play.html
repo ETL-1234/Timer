@@ -31,7 +31,6 @@ body{
 }
 
 /* BACKGROUND IMAGE */
-
 #bgImage{
   position:fixed;
   inset:0;
@@ -42,7 +41,6 @@ body{
 }
 
 /* OVERLAY */
-
 #overlay{
   position:fixed;
   inset:0;
@@ -50,7 +48,6 @@ body{
 }
 
 /* TIMER */
-
 #timer{
   font-size:clamp(40px,10vw,80px);
   font-weight:600;
@@ -70,8 +67,7 @@ body{
   opacity:0;
 }
 
-  /* COMPLETE OVERLAY */
-
+/* COMPLETE OVERLAY */
 .complete-overlay{
   position:fixed;
   inset:0;
@@ -82,10 +78,6 @@ body{
   z-index:10;
   opacity:0;
   transition: opacity 1.5s ease;
-  pointer-events:none;
-}
-
-.complete-overlay.hidden{
   pointer-events:none;
 }
 
@@ -100,6 +92,14 @@ body{
   display:flex;
   flex-direction:column;
   align-items:center;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 1.2s ease, transform 1.2s ease;
+}
+
+.complete-overlay.show .complete-content {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .complete-title{
@@ -111,18 +111,7 @@ body{
 .complete-sub{
   font-size:16px;
   opacity:0.8;
-  margin-bottom:40px; /* space for icon below */
-}
-
-  .complete-content {
-  opacity: 0;
-  transform: scale(0.95);
-  transition: opacity 1.2s ease, transform 1.2s ease;
-}
-
-.complete-overlay.show .complete-content {
-  opacity: 1;
-  transform: scale(1);
+  margin-bottom:40px;
 }
 
 /* JOURNAL BUTTON */
@@ -130,7 +119,7 @@ body{
   width:auto;
   height:auto;
   border:none;
-  background:none;  /* remove background */
+  background:none;
   cursor:pointer;
   display:flex;
   justify-content:center;
@@ -141,11 +130,10 @@ body{
   width:60px;
   height:60px;
   object-fit:contain;
-  opacity:0.9; /* slightly transparent icon */
+  opacity:0.9;
 }
 
 /* BUTTON */
-
 #toggleBtn,
 #editBtn{
   padding:14px 30px;
@@ -174,24 +162,17 @@ body{
   </div>
 </div>
 
- <div id="completeOverlay" class="complete-overlay hidden">
+<div id="completeOverlay" class="complete-overlay hidden">
   <div class="complete-content">
-    
     <div class="complete-title">Session complete</div>
-    
-    <div class="complete-sub">
-      Tap to return to settings
-    </div>
-
+    <div class="complete-sub">Tap to return to settings</div>
     <button id="journalBtn">
       <img src="https://tppyzexttkuvcobbbmaz.supabase.co/storage/v1/object/public/Other/journal_pen_white.png" />
     </button>
-
   </div>
 </div> 
 
 <script>
-
 const SUPABASE_URL = "https://tppyzexttkuvcobbbmaz.supabase.co";
 const SUPABASE_KEY = "sb_publishable_VZiTsc0JGVx6tVf2Zu-9uQ_-FwjGpQW";
 
@@ -206,7 +187,7 @@ let intervalAudio = null;
 
 let lastInteraction = Date.now();
 let hasStarted = false;
-  
+
 // ELEMENTS
 const timerEl = document.getElementById("timer");
 const toggleBtn = document.getElementById("toggleBtn");
@@ -214,21 +195,19 @@ const controls = document.getElementById("controls");
 
 // LOAD SETTINGS
 function loadSettings(){
-
   const duration = localStorage.getItem("timer_duration");
 
-if(duration && duration.includes(":")){
-  const [min, sec] = duration.split(":").map(Number);
-  totalSeconds = min * 60 + sec;
-} else {
-  totalSeconds = 300; // default 5 min
-}
+  if(duration && duration.includes(":")){
+    const [min, sec] = duration.split(":").map(Number);
+    totalSeconds = min * 60 + sec;
+  } else {
+    totalSeconds = 300; // default 5 min
+  }
 
-remaining = totalSeconds;
+  remaining = totalSeconds;
   
   const endBell = localStorage.getItem("timer_endbell_url");
   const intervalBell = localStorage.getItem("timer_interval_url");
-  const intervalMin = localStorage.getItem("timer_interval"); // minutes
   const themeName = localStorage.getItem("timer_theme");
 
   if(endBell) endAudio = new Audio(endBell);
@@ -237,44 +216,29 @@ remaining = totalSeconds;
   applyTheme(themeName);
 }
 
-// APPLY THEME (FULL SUPPORT)
+// APPLY THEME
 async function applyTheme(name){
-
   if(!name){
     document.body.style.background = "#232f52";
     return;
   }
 
-  const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/selfpracticetheme?name=eq.${name}`,
-    {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/selfpracticetheme?name=eq.${name}`,{
       headers:{
         apikey:SUPABASE_KEY,
         Authorization:`Bearer ${SUPABASE_KEY}`
       }
-    }
-  );
+  });
 
   const data = await res.json();
   const theme = data[0];
   if(!theme) return;
 
-  // TEXT COLOR
-  if(theme.text_color){
-    document.documentElement.style.setProperty("--text-color", theme.text_color);
-  }
-
-  // IMAGE
-  if(theme.imageurl){
-    document.getElementById("bgImage").src = theme.imageurl;
-  }
-
-  // GRADIENT (optional)
+  if(theme.text_color) document.documentElement.style.setProperty("--text-color", theme.text_color);
+  if(theme.imageurl) document.getElementById("bgImage").src = theme.imageurl;
   if(theme.bg_start_gradient && theme.bg_end_gradient){
     document.body.style.background = `linear-gradient(${theme.bg_start_gradient}, ${theme.bg_end_gradient})`;
   }
-
-  // OVERLAY (optional)
   if(theme.bg_overlay_color){
     document.getElementById("overlay").style.background = theme.bg_overlay_color;
   }
@@ -289,21 +253,17 @@ function formatTime(sec){
 
 // COUNTDOWN START
 async function startCountdown(){
-
   for(let i=3;i>0;i--){
     timerEl.innerText = i;
     await new Promise(r=>setTimeout(r,1000));
   }
-
 }
 
 // START TIMER
 function startTimer(){
-
   hasStarted = true;
 
   interval = setInterval(()=>{
-
     if(!paused){
       remaining--;
       timerEl.innerText = formatTime(remaining);
@@ -311,65 +271,66 @@ function startTimer(){
       // INTERVAL BELL
       const intervalMin = parseInt(localStorage.getItem("timer_interval"));
       if(intervalMin && intervalAudio){
-        if(remaining % (intervalMin * 60) === 0){
+        if(remaining % (intervalMin*60) === 0){
           intervalAudio.currentTime = 0;
           intervalAudio.play().catch(()=>{});
         }
       }
 
       // END
-      if(remaining <= 0){
-  clearInterval(interval);
+      if(remaining <=0){
+        clearInterval(interval);
+        interval = null; // important to reset for toggle logic
 
-  if(endAudio){
-    endAudio.currentTime = 0;
-    endAudio.play().catch(()=>{});
-  }
+        if(endAudio){
+          endAudio.currentTime = 0;
+          endAudio.play().catch(()=>{});
+        }
 
-  toggleBtn.innerText = "Done";
+        toggleBtn.innerText = "Done";
 
- // SHOW OVERLAY with delay and fade out timer/buttons
-const overlay = document.getElementById("completeOverlay");
+        // fade out timer & buttons
+        timerEl.classList.add("fade-out");
+        controls.classList.add("fade-out");
 
-// fade out timer and buttons
-timerEl.classList.add("fade-out");
-controls.classList.add("fade-out");
-
-// delay overlay by 1.5s
-setTimeout(()=>{
-  overlay.classList.remove("hidden");
-  overlay.classList.add("show");
-}, 1500);
+        // SHOW OVERLAY with 1.5s delay
+        setTimeout(()=>{
+          const overlay = document.getElementById("completeOverlay");
+          overlay.classList.remove("hidden");
+          overlay.classList.add("show");
+        },1500);
+      }
+    }
+  },1000);
 }
 
 // BUTTONS
 toggleBtn.onclick = async () => {
-
   lastInteraction = Date.now();
 
   if(!interval){
-  toggleBtn.innerText = "Pause";
-  await startCountdown();
-  timerEl.innerText = formatTime(remaining); //  fix
-  startTimer();
+    toggleBtn.innerText = "Pause";
+    await startCountdown();
+    timerEl.innerText = formatTime(remaining);
+    startTimer();
   } else {
     paused = !paused;
     toggleBtn.innerText = paused ? "Resume" : "Pause";
   }
 };
 
-  document.getElementById("editBtn").onclick = () => {
+document.getElementById("editBtn").onclick = () => {
   window.location.href = "https://etl-1234.github.io/Timer/setup.html";
 };
 
-  // TAP OVERLAY → BACK TO SETTINGS
+// TAP OVERLAY → BACK TO SETTINGS
 document.getElementById("completeOverlay").onclick = () => {
   window.location.href = "https://etl-1234.github.io/Timer/setup.html";
 };
 
 // JOURNAL BUTTON
-document.getElementById("journalBtn").onclick = (e) => {
-  e.stopPropagation(); // prevent overlay click
+document.getElementById("journalBtn").onclick = (e)=>{
+  e.stopPropagation();
   window.location.href = "https://etl-1234.github.io/Journal/journalpage.html";
 };
 
@@ -381,12 +342,12 @@ document.body.addEventListener("click", ()=>{
 });
 
 setInterval(()=>{
-  if(hasStarted && !paused && Date.now() - lastInteraction > 5000){
+  if(hasStarted && !paused && Date.now()-lastInteraction>5000){
     timerEl.classList.add("fade-out");
     controls.classList.add("fade-out");
   }
 },1000);
-  
+
 // INIT
 loadSettings();
 timerEl.innerText = formatTime(remaining);

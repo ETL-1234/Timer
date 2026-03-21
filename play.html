@@ -269,7 +269,7 @@ document.body.addEventListener("click", ()=>{
 });
 
 setInterval(()=>{
-  if(hasStarted && Date.now() - lastInteraction > 5000){
+  if(hasStarted && !paused && Date.now() - lastInteraction > 5000){
     timerEl.classList.add("fade-out");
     controls.classList.add("fade-out");
   }

@@ -59,6 +59,10 @@ body{
 
 #controls{
   margin-top:40px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:12px;
   transition:opacity 1.8s ease;
 }
 
@@ -68,8 +72,10 @@ body{
 
 /* BUTTON */
 
-#toggleBtn{
+#toggleBtn,
+#editBtn{
   padding:14px 30px;
+  width:180px;
   border-radius:14px;
   border:none;
   background:rgba(255,255,255,0.2);

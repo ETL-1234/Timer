@@ -90,7 +90,9 @@ async function loadThemes(){
   const img = document.createElement("img");
   img.src = theme.imageurl;
 
-  const saved = localStorage.getItem("timeropen_theme_image");
+ const saved = 
+  localStorage.getItem("timeropen_theme_image") 
+  localStorage.getItem("timeropen_theme") 
 
   // ✅ Default theme (always visible border)
   if(theme.name.includes("default")){

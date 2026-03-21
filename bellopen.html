@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Choose End Bell</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg-color:#232f52;
+  --text-color:#ffffff;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg-color);
+  color:var(--text-color);
+  height:100vh;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;   /* ✅ THIS FIXES THE LAYOUT */
+
+  padding:20px;
+  text-align:center;
+  gap:30px;                 /* clean spacing instead of space-between */
+}
+
+  #image{
+  width:200px;
+  height:200px;
+  object-fit:cover;
+  border-radius:18px;
+  transition:transform .3s ease;
+}
+
+#image:active{
+  transform:scale(.96);
+}
+
+#name{
+  font-size:24px;
+  font-weight:600;
+  margin-top:10px;
+}
+
+#description{
+  font-size:14px;
+  font-style:italic;
+  opacity:.85;
+  max-width:320px;
+  line-height:1.4;
+}
+
+/* INTRO */
+
+#intro{
+  font-size:16px;
+  font-style:italic;
+  opacity:.85;
+  max-width:420px;
+}
+
+/* CAROUSEL */
+
+  #content{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
+}
+
+#carousel{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:20px;
+  width:100%;
+  max-width:420px;
+}
+
+/* ARROWS */
+
+.arrow{
+  font-size:32px;
+  cursor:pointer;
+  user-select:none;
+  opacity:.7;
+}
+
+.arrow:active{
+  opacity:1;
+}
+
+/* IMAGE */
+
+#image{
+  width:220px;
+  height:220px;
+  object-fit:cover;
+  border-radius:18px;
+}
+
+/* TEXT */
+
+#name{
+  font-size:24px;
+  font-weight:600;
+  margin-top:20px;
+}
+
+#description{
+  font-size:18px;
+  font-style:italic;
+  margin-top:10px;
+  opacity:.85;
+}
+
+/* BUTTONS */
+
+.actionBtn{
+  margin-top:10px;
+  padding:14px 30px;
+  border-radius:14px;
+  border:none;
+  width: 160px;
+  background:rgba(255,255,255,0.2);
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+  transition:transform .15s ease, background .2s ease;
+}
+
+.actionBtn:active{
+  transform:scale(.96);
+  background:rgba(255,255,255,0.3);
+}
+
+  #content{
+  animation: fadeIn .4s ease;
+}
+
+@keyframes fadeIn{
+  from{opacity:0; transform:translateY(10px);}
+  to{opacity:1; transform:translateY(0);}
+}
+  
+</style>
+</head>
+
+<body>
+
+<div id="intro">
+Choose a sound that supports your focus and how you want to feel at the end of your meditation. Bells and brass bowls offer clear, grounding tones to center the mind, while crystal bowls bring a softer, more subtle energetic quality. Koshi chimes are one minute long for a gentle, spacious way to close your practice.
+</div>
+
+<div>
+
+ <div id="content">
+
+  <div id="carousel">
+    <div class="arrow" id="left">&#8249;</div>
+    <img id="image" src="">
+    <div class="arrow" id="right">&#8250;</div>
+  </div>
+
+  <div id="name"></div>
+  <div id="description"></div>
+
+  <div class="controls">
+    <button id="playBtn" class="actionBtn">Play sound</button>
+  </div>
+
+  <button id="setBtn" class="actionBtn">Set</button>
+
+</div>
+
+<script>
+
+const SUPABASE_URL = "https://tppyzexttkuvcobbbmaz.supabase.co";
+const SUPABASE_KEY = "sb_publishable_VZiTsc0JGVx6tVf2Zu-9uQ_-FwjGpQW";
+
+let sounds = [];
+let index = 0;
+let audio = null;
+let audioTimeout = null; // ✅ controls preview limit
+
+// LOAD DATA
+async function loadSounds(){
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/selfpracticebells?select=*&active=eq.true&order=order_by.asc`,
+    {
+      headers:{
+        apikey:SUPABASE_KEY,
+        Authorization:`Bearer ${SUPABASE_KEY}`
+      }
+    }
+  );
+
+  sounds = await res.json();
+
+  if(!sounds.length){
+    alert("No sounds found");
+    return;
+  }
+
+  render();
+}
+
+// FORMAT DESCRIPTION
+  
+  function formatDescription(text){
+  if(!text) return "";
+
+  if(text.includes(".")){
+    const parts = text.split(".");
+    return parts[0] + ".<br>" + (parts[1]?.trim() || "");
+  }
+
+  if(text.includes("Supports")){
+    return text.replace("Supports", "<br>Supports");
+  }
+
+  return text;
+}
+  
+// RENDER
+  function render(){
+
+  // ✅ STOP previous audio cleanly
+  if(audio){
+    fadeOut(audio, 6000);
+  }
+
+  if(audioTimeout){
+    clearTimeout(audioTimeout);
+  }
+
+  const sound = sounds[index];
+
+  // ✅ Update UI (this is what was breaking)
+  document.getElementById("image").src = sound.imageurl;
+  document.getElementById("name").innerText = sound.name;
+  document.getElementById("description").innerHTML = formatDescription(sound.description);
+
+  // ✅ Prepare audio
+  audio = new Audio(sound.mp3url);
+  audio.preload = "auto";
+}
+
+// NAVIGATION
+document.getElementById("left").onclick = () => {
+  index = (index - 1 + sounds.length) % sounds.length;
+  render();
+};
+
+document.getElementById("right").onclick = () => {
+  index = (index + 1) % sounds.length;
+  render();
+};
+
+
+  // FADE OUT FUNCTION (global)
+function fadeOut(audio, duration = 6000){
+
+  if(!audio) return;
+
+  const startVolume = audio.volume;
+  const stepTime = 50;
+  const steps = duration / stepTime;
+  const volumeStep = startVolume / steps;
+
+  let fadeInterval = setInterval(()=>{
+
+    if(audio.volume > volumeStep){
+      audio.volume -= volumeStep;
+    } else {
+      audio.volume = 0;
+      audio.pause();
+      audio.currentTime = 0;
+      audio.volume = 1; // reset for next play
+      clearInterval(fadeInterval);
+    }
+
+  }, stepTime);
+}
+  
+// PLAY BUTTON
+document.getElementById("playBtn").onclick = () => {
+
+  if(!audio) return;
+
+  // ✅ STOP any previous audio first
+  fadeOut(audio, 6000);
+
+  // ✅ CLEAR previous timer
+  if(audioTimeout){
+    clearTimeout(audioTimeout);
+  }
+
+  // ▶️ PLAY
+  audio.play().catch(()=>{});
+
+  // ⏱ LIMIT playback (6 seconds)
+  audioTimeout = setTimeout(() => {
+     fadeOut(audio);
+  }, 6000);
+
+  // optional vibration
+  if(navigator.vibrate) navigator.vibrate(20);
+};
+
+// SET
+document.getElementById("setBtn").onclick = () => {
+document.getElementById("playBtn").innerText = "Playing...";
+  
+  const selected = sounds[index];
+
+  localStorage.setItem("timer_endbell", selected.name);
+  localStorage.setItem("timer_endbell_url", selected.mp3url);
+
+  window.location.href = "https://etl-1234.github.io/Timer/setupopen.html";
+};
+
+// SWIPE SUPPORT (mobile)
+let startX = 0;
+
+document.addEventListener("touchstart", e=>{
+  startX = e.touches[0].clientX;
+});
+
+document.addEventListener("touchend", e=>{
+  let diff = e.changedTouches[0].clientX - startX;
+
+  if(Math.abs(diff) > 50){
+    if(diff > 0){
+      index = (index - 1 + sounds.length) % sounds.length;
+    } else {
+      index = (index + 1) % sounds.length;
+    }
+    render();
+  }
+});
+
+// INIT
+loadSounds();
+
+</script>
+
+</body>
+</html>

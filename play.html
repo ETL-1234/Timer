@@ -304,14 +304,23 @@ function startTimer(){
 
       // END
       if(remaining <= 0){
-        clearInterval(interval);
-        if(endAudio){
-          endAudio.currentTime = 0;
-          endAudio.play().catch(()=>{});
-        }
-        toggleBtn.innerText = "Done";
-      }
-    }
+  clearInterval(interval);
+
+  if(endAudio){
+    endAudio.currentTime = 0;
+    endAudio.play().catch(()=>{});
+  }
+
+  toggleBtn.innerText = "Done";
+
+  // ✨ SHOW OVERLAY
+  const overlay = document.getElementById("completeOverlay");
+  overlay.classList.remove("hidden");
+
+  setTimeout(()=>{
+    overlay.classList.add("show");
+  },50);
+}
 
   },1000);
 }

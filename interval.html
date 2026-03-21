@@ -111,34 +111,51 @@ body{
 <button id="setBtn">Set</button>
 
 <script>
-
 const col = document.getElementById("minutes");
 
-// CREATE ITEMS (0 = none)
+const itemHeight = 44;
+const visibleCount = 5;
+const spacerCount = Math.floor(visibleCount / 2);
+
+// CREATE ITEMS + SPACERS
 function createItems(){
+
+  // TOP SPACERS
+  for(let i=0;i<spacerCount;i++){
+    const spacer = document.createElement("div");
+    spacer.style.height = itemHeight + "px";
+    col.appendChild(spacer);
+  }
+
+  // VALUES
   for(let i=0;i<=59;i++){
     const el = document.createElement("div");
     el.className = "item";
-
     el.innerText = i === 0 ? "none" : String(i).padStart(2,"0");
-
     col.appendChild(el);
+  }
+
+  // BOTTOM SPACERS
+  for(let i=0;i<spacerCount;i++){
+    const spacer = document.createElement("div");
+    spacer.style.height = itemHeight + "px";
+    col.appendChild(spacer);
   }
 }
 
 createItems();
 
-// LOAD SAVED VALUE
-const saved = localStorage.getItem("timer_interval");
 
-if(saved){
-  if(saved === "none"){
-    col.scrollTop = 0;
-  } else {
-    const val = parseInt(saved);
-    col.scrollTop = val * 44;
-  }
+// ✅ CENTER-BASED SCROLL
+function scrollToValue(value){
+  const offset = col.offsetHeight / 2 - itemHeight / 2;
+  col.scrollTop = (value + spacerCount) * itemHeight - offset;
 }
+
+
+// 🎯 DEFAULT = ALWAYS 5
+scrollToValue(5);
+
 
 // ACTIVE STATE
 function updateActive(){
@@ -152,13 +169,40 @@ function updateActive(){
   });
 }
 
-col.addEventListener("scroll", updateActive);
-updateActive();
 
-// GET VALUE
+// 🧲 SNAP TO CENTER
+let scrollTimeout;
+
+col.addEventListener("scroll", () => {
+  updateActive();
+
+  clearTimeout(scrollTimeout);
+
+  scrollTimeout = setTimeout(() => {
+    const offset = col.offsetHeight / 2 - itemHeight / 2;
+    const raw = Math.round((col.scrollTop + offset) / itemHeight);
+    const target = raw * itemHeight - offset;
+
+    col.scrollTo({
+      top: target,
+      behavior: "smooth"
+    });
+
+  }, 80);
+});
+
+
+// INITIAL STATE
+setTimeout(updateActive, 50);
+
+
+// GET VALUE (FIXED)
 function getValue(){
-  return Math.round(col.scrollTop / 44);
+  const offset = col.offsetHeight / 2 - itemHeight / 2;
+  const raw = Math.round((col.scrollTop + offset) / itemHeight);
+  return Math.max(0, Math.min(59, raw - spacerCount));
 }
+
 
 // SAVE
 document.getElementById("setBtn").onclick = () => {

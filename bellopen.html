@@ -325,8 +325,8 @@ document.getElementById("playBtn").innerText = "Playing...";
   
   const selected = sounds[index];
 
-  localStorage.setItem("timer_endbell", selected.name);
-  localStorage.setItem("timer_endbell_url", selected.mp3url);
+  localStorage.setItem("timeropen_intervalbell", selected.name);
+  localStorage.setItem("timeropen_intervalbell_url", selected.mp3url);
 
   window.location.href = "https://etl-1234.github.io/Timer/setupopen.html";
 };

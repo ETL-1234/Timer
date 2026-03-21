@@ -197,7 +197,8 @@ setTimeout(()=>{
 
 // GET SELECTED VALUE
 function getValue(container){
-  const raw = Math.round(container.scrollTop / itemHeight);
+  const offset = container.offsetHeight / 2 - itemHeight / 2;
+  const raw = Math.round((container.scrollTop + offset) / itemHeight);
   return Math.max(0, Math.min(59, raw - spacerCount));
 }
 

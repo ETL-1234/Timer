@@ -210,9 +210,9 @@ document.getElementById("setBtn").onclick = () => {
   const val = getValue();
 
   if(val === 0){
-    localStorage.setItem("timer_interval", "none");
+    localStorage.setItem("timeropen_intervalduration", "none");
   } else {
-    localStorage.setItem("timer_interval", `${val}`);
+    localStorage.setItem("timeropen_intervalduration", `${val}`);
   }
 
   window.location.href = "https://etl-1234.github.io/Timer/setupopen.html";

@@ -173,22 +173,13 @@ function scrollToValue(container, value){
 
 const saved = localStorage.getItem("timer_duration");
 
-setTimeout(() => {
-
-  if(saved){
-    const [m,s] = saved.split(":").map(Number);
-    scrollToValue(minutesCol, m);
-    scrollToValue(secondsCol, s);
-  } else {
-    scrollToValue(minutesCol, 5);
-    scrollToValue(secondsCol, 0);
-  }
-
-  // ✅ force correct active state AFTER positioning
-  updateActive(minutesCol);
-  updateActive(secondsCol);
-
-}, 0);
+if(saved){
+  const [m,s] = saved.split(":").map(Number);
+  scrollToValue(minutesCol, m);
+  scrollToValue(secondsCol, s);
+} else {
+  scrollToValue(minutesCol, 5); // default 5 min
+}
 
 // ACTIVE ITEM TRACKING
 function updateActive(container){

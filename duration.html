@@ -166,8 +166,7 @@ createItems(secondsCol,59);
 
 // SCROLL TO DEFAULT OR SAVED
 function scrollToValue(container, value){
-  const offset = itemHeight * spacerCount;
-  container.scrollTop = (value * itemHeight) + offset;
+  container.scrollTop = (value + spacerCount) * itemHeight;
 }
 
 const saved = localStorage.getItem("timer_duration");

@@ -235,6 +235,11 @@ async function applyTheme(name){
   if(!theme) return;
 
   if(theme.text_color) document.documentElement.style.setProperty("--text-color", theme.text_color);
+ 
+  if(theme.button_color){
+  document.getElementById("toggleBtn").style.background = theme.button_color;
+  document.getElementById("editBtn").style.background = theme.button_color;
+}
   if(theme.imageurl) document.getElementById("bgImage").src = theme.imageurl;
   if(theme.bg_start_gradient && theme.bg_end_gradient){
     document.body.style.background = `linear-gradient(${theme.bg_start_gradient}, ${theme.bg_end_gradient})`;
@@ -242,6 +247,7 @@ async function applyTheme(name){
   if(theme.bg_overlay_color){
     document.getElementById("overlay").style.background = theme.bg_overlay_color;
   }
+  
 }
 
 // FORMAT TIME

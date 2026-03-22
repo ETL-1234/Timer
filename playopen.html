@@ -177,6 +177,10 @@ async function applyTheme(name){
   document.getElementById("editBtn").style.background = rgbaColor;
 }
 
+  if(theme.iconurl){
+  document.getElementById("journalIcon").src = theme.iconurl;
+}
+  
   if(theme.imageurl) document.getElementById("bgImage").src = theme.imageurl;
   if(theme.bg_overlay_color) document.getElementById("overlay").style.background = theme.bg_overlay_color;
 }

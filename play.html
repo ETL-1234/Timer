@@ -216,6 +216,18 @@ function loadSettings(){
   applyTheme(themeName);
 }
 
+  //COLOR OPACITY
+
+  function hexToRGBA(hex, opacity){
+  hex = hex.replace('#','');
+
+  const r = parseInt(hex.substring(0,2), 16);
+  const g = parseInt(hex.substring(2,4), 16);
+  const b = parseInt(hex.substring(4,6), 16);
+
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+}
+  
 // APPLY THEME
 async function applyTheme(name){
   if(!name){
@@ -237,8 +249,9 @@ async function applyTheme(name){
   if(theme.text_color) document.documentElement.style.setProperty("--text-color", theme.text_color);
  
   if(theme.button_color){
-  document.getElementById("toggleBtn").style.background = theme.button_color;
-  document.getElementById("editBtn").style.background = theme.button_color;
+  const rgbaColor = hexToRGBA(theme.button_color, 0.2); // keep your 0.2 opacity
+  document.getElementById("toggleBtn").style.background = rgbaColor;
+  document.getElementById("editBtn").style.background = rgbaColor;
 }
   if(theme.imageurl) document.getElementById("bgImage").src = theme.imageurl;
   if(theme.bg_start_gradient && theme.bg_end_gradient){

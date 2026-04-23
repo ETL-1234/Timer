@@ -218,19 +218,8 @@ async function loadSounds(){
 
 // FORMAT DESCRIPTION
   
-  function formatDescription(text){
-  if(!text) return "";
-
-  if(text.includes(".")){
-    const parts = text.split(".");
-    return parts[0] + ".<br>" + (parts[1]?.trim() || "");
-  }
-
-  if(text.includes("Supports")){
-    return text.replace("Supports", "<br>Supports");
-  }
-
-  return text;
+ function formatDescription(text){
+  return text || "";
 }
   
 // RENDER

@@ -183,7 +183,6 @@ let interval = null;
 let paused = false;
 
 let endAudio = null;
-let intervalAudio = null;
 
 let lastInteraction = Date.now();
 let hasStarted = false;
@@ -206,12 +205,12 @@ function loadSettings(){
 
   remaining = totalSeconds;
   
-  const endBell = localStorage.getItem("timer_endbell_url");
-  const intervalBell = localStorage.getItem("timer_interval_url");
-  const themeName = localStorage.getItem("timer_theme");
+const endBell = localStorage.getItem("timer_endbell_url");
+const themeName = localStorage.getItem("timer_theme");
 
-  if(endBell) endAudio = new Audio(endBell);
-  if(intervalBell) intervalAudio = new Audio(intervalBell);
+if(endBell) endAudio = new Audio(endBell);
+
+applyTheme(themeName);
 
   applyTheme(themeName);
 }
@@ -287,14 +286,15 @@ function startTimer(){
       remaining--;
       timerEl.innerText = formatTime(remaining);
 
-      // INTERVAL BELL
-      const intervalMin = parseInt(localStorage.getItem("timer_interval"));
-      if(intervalMin && intervalAudio){
-        if(remaining % (intervalMin*60) === 0){
-          intervalAudio.currentTime = 0;
-          intervalAudio.play().catch(()=>{});
-        }
-      }
+   // INTERVAL BELL
+   const intervalMin = parseInt(localStorage.getItem("timer_interval"));
+
+  if(intervalMin && endAudio && remaining > 0){
+  if(remaining % (intervalMin * 60) === 0){
+    endAudio.currentTime = 0;
+    endAudio.play().catch(()=>{});
+  }
+}
 
       // END
       if(remaining <=0){

@@ -328,10 +328,10 @@ function startTimer(){
       const intervalMin = parseInt(window.intervalDurationValue);
 
       if(intervalMin && intervalMin > 0 && intervalAudio){
-        if(seconds % (intervalMin * 60) === 0){
-          intervalAudio.currentTime = 0;
-          intervalAudio.play().catch(()=>{});
-           console.log("Interval bell failed:", error);
+      if(seconds % (intervalMin * 60) === 0){
+  intervalAudio.currentTime = 0;
+  intervalAudio.play().catch(()=>{});
+}
         }
       }
     }

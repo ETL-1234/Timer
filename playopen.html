@@ -188,37 +188,45 @@ function loadSettings(){
 // ANALYTICS SETTINGS
 function getTimerAnalyticsSettings(){
 
-  const duration = localStorage.getItem("timer_duration");
-  const themeName = localStorage.getItem("timer_theme");
-  const animate = localStorage.getItem("timer_animate") === "true";
-  const intervalMinutes = parseInt(
-    localStorage.getItem("timer_interval"),
-    10
-  );
+  const themeName =
+    localStorage.getItem("timeropen_theme");
+
+  const animate =
+    localStorage.getItem("timeropen_animate") === "true";
+
+  const intervalDuration =
+    parseInt(
+      localStorage.getItem("timeropen_intervalduration"),
+      10
+    );
+
+  const intervalBellUrl =
+    localStorage.getItem("timeropen_intervalbell_url");
+
+  let intervalBell = "none";
+
+  if(intervalBellUrl){
+    intervalBell = intervalBellUrl
+      .split("/")
+      .pop()
+      .replace(/\.[^/.]+$/, "");
+  }
 
   return {
-    duration_minutes: Math.round(totalSeconds / 60),
+
     theme: themeName || "default",
-    background: animate ? "animated" : "still",
-   end_bell: (() => {
-   const url = localStorage.getItem("timer_endbell_url");
 
-  if(!url) return "none";
+    background: animate
+      ? "animated"
+      : "still",
 
-  return url
-    .split("/")
-    .pop()
-    .replace(/\.[^/.]+$/, "");
-})(),
+    interval_bell: intervalBell,
 
-    
-    interval_bell: intervalMinutes
-      ? true
-      : false,
-    interval_minutes: intervalMinutes || null
+    interval_minutes:
+      intervalDuration || null
+
   };
 }
-
   
   //COLOR OPACITY
 

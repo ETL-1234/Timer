@@ -33,13 +33,89 @@ body::-webkit-scrollbar{
 
 h2{
   text-align:left;
-  margin-bottom:20px;
+  margin:0;
   margin-left:-8px;
-  font-size:20px;
+  font-size:16px;
   font-weight:500;
+  line-height:1;
   color:#ffffff;
   opacity:1;
 }
+
+/* HEADER ROW */
+
+.header-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:32px;
+}
+
+.header-row h2{
+  margin-bottom:0;
+  margin-left:-8px;
+}
+
+/* ANIMATE CONTROL */
+
+.animate-control{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  font-size:16px;
+  font-weight:500;
+  line-height:1;
+  color:#ffffff;
+  white-space:nowrap;
+ }
+
+/* TOGGLE */
+
+
+.switch{
+  position:relative;
+  display:inline-block;
+  width:48px;        /* was 96px */
+  height:26px;       /* was 52px */
+  flex-shrink:0;
+}
+
+.switch input{
+  opacity:0;
+  width:0;
+  height:0;
+}
+
+.slider{
+  position:absolute;
+  cursor:pointer;
+  inset:0;
+  background:rgba(255,255,255,0.25);
+  border-radius:13px; /* was 26px */
+  transition:.25s;
+}
+
+.slider:before{
+  content:"";
+  position:absolute;
+  width:20px;         /* was 40px */
+  height:20px;        /* was 40px */
+  left:3px;           /* was 6px */
+  top:3px;            /* was 6px */
+  background:white;
+  border-radius:50%;
+  transition:.25s;
+}
+
+.switch input:checked + .slider{
+  background:rgba(255,255,255,0.55);
+}
+
+.switch input:checked + .slider:before{
+  transform:translateX(22px); /* was 44px */
+}
+
+
 
 /* GRID */
 
@@ -76,6 +152,21 @@ h2{
 </head>
 
 <body>
+
+  <div class="header-row">
+
+  <h2>Choose your theme</h2>
+
+  <div class="animate-control">
+    <span>Animate</span>
+
+    <label class="switch">
+      <input type="checkbox" id="animateToggle">
+      <span class="slider"></span>
+    </label>
+  </div>
+
+</div>
 
 <h2>Choose your theme</h2>
 

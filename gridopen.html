@@ -177,6 +177,24 @@ h2{
 const SUPABASE_URL = "https://tppyzexttkuvcobbbmaz.supabase.co";
 const SUPABASE_KEY = "sb_publishable_VZiTsc0JGVx6tVf2Zu-9uQ_-FwjGpQW";
 
+const animateToggle = document.getElementById("animateToggle");
+
+// LOAD SAVED ANIMATION SETTING
+const savedAnimate = localStorage.getItem("timer_animate");
+
+animateToggle.checked = savedAnimate === "true";
+
+// SAVE ANIMATION SETTING
+animateToggle.addEventListener("change", () => {
+
+  localStorage.setItem(
+    "timer_animate",
+    animateToggle.checked ? "true" : "false"
+  );
+
+});
+
+
 async function loadThemes(){
 
   const res = await fetch(

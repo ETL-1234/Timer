@@ -343,7 +343,7 @@ toggleBtn.onclick = () => {
   lastInteraction = Date.now();
 
   if(!interval){
-   
+
     if(!hasTrackedStart){
 
       track("start", {
@@ -355,40 +355,17 @@ toggleBtn.onclick = () => {
 
     toggleBtn.innerText = "Pause";
 
-    await startCountdown();
-
-    timerEl.innerText = formatTime(remaining);
-
     startTimer();
 
   } else {
+
     paused = !paused;
+
     toggleBtn.innerText = paused ? "Resume" : "Pause";
   }
 };
-
     
-// Unlock interval audio through the user's tap
-    if(intervalAudio){
-      intervalAudio.volume = 0;
-      intervalAudio.currentTime = 0;
 
-      intervalAudio.play().then(() => {
-        intervalAudio.pause();
-        intervalAudio.currentTime = 0;
-        intervalAudio.volume = 1;
-      }).catch(() => {
-        intervalAudio.volume = 1;
-      });
-    }
-    
-    startTimer();
-  } else {
-    paused = !paused;
-    toggleBtn.innerText = paused ? "Resume" : "Pause";
-
-    }
-};
 
 document.getElementById("editBtn").onclick = () => {
 

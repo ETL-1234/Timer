@@ -398,6 +398,11 @@ setInterval(()=>{
 loadSettings();
 timerEl.innerText = formatTime(seconds);
 
+  // ANALYTICS
+track("view", getTimerAnalyticsSettings());
+
+
+
 </script>
 
 </body>

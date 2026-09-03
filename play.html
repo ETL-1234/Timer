@@ -236,40 +236,91 @@ applyTheme(themeName);
   
 // APPLY THEME
 async function applyTheme(name){
+
+  const bgImage = document.getElementById("bgImage");
+  const bgVideo = document.getElementById("bgVideo");
+
   if(!name){
     document.body.style.background = "#232f52";
+    bgImage.style.display = "none";
+    bgVideo.style.display = "none";
     return;
   }
 
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/selfpracticetheme?name=eq.${name}`,{
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/selfpracticetheme?name=eq.${name}`,
+    {
       headers:{
         apikey:SUPABASE_KEY,
         Authorization:`Bearer ${SUPABASE_KEY}`
       }
-  });
+    }
+  );
 
   const data = await res.json();
   const theme = data[0];
+
   if(!theme) return;
 
-  if(theme.text_color) document.documentElement.style.setProperty("--text-color", theme.text_color);
- 
-  if(theme.button_color){
-  const rgbaColor = hexToRGBA(theme.button_color, 0.2); // keep your 0.2 opacity
-  document.getElementById("toggleBtn").style.background = rgbaColor;
-  document.getElementById("editBtn").style.background = rgbaColor;
-}
-  if(theme.imageurl) document.getElementById("bgImage").src = theme.imageurl;
-  if(theme.bg_start_gradient && theme.bg_end_gradient){
-    document.body.style.background = `linear-gradient(${theme.bg_start_gradient}, ${theme.bg_end_gradient})`;
+  // TEXT COLOR
+  if(theme.text_color){
+    document.documentElement.style.setProperty(
+      "--text-color",
+      theme.text_color
+    );
   }
-  if(theme.bg_overlay_color){
-    document.getElementById("overlay").style.background = theme.bg_overlay_color;
-  }
-  
-}
 
-// FORMAT TIME
+  // BUTTON COLOR
+  if(theme.button_color){
+    const rgbaColor = hexToRGBA(theme.button_color, 0.2);
+
+    document.getElementById("toggleBtn").style.background = rgbaColor;
+    document.getElementById("editBtn").style.background = rgbaColor;
+  }
+
+  // BACKGROUND
+  const animate = localStorage.getItem("timer_animate") === "true";
+
+  if(animate && theme.mp4url){
+
+    // ANIMATED BACKGROUND
+    bgImage.style.display = "none";
+
+    bgVideo.src = theme.mp4url;
+    bgVideo.style.display = "block";
+
+    bgVideo.muted = true;
+    bgVideo.loop = true;
+    bgVideo.playsInline = true;
+
+    bgVideo.play().catch(()=>{});
+
+  } else if(theme.imageurl){
+
+    // STATIC JPG BACKGROUND
+    bgVideo.pause();
+    bgVideo.removeAttribute("src");
+    bgVideo.load();
+    bgVideo.style.display = "none";
+
+    bgImage.src = theme.imageurl;
+    bgImage.style.display = "block";
+  }
+
+  // GRADIENT
+  if(theme.bg_start_gradient && theme.bg_end_gradient){
+    document.body.style.background =
+      `linear-gradient(${theme.bg_start_gradient}, ${theme.bg_end_gradient})`;
+  }
+
+  // OVERLAY
+  if(theme.bg_overlay_color){
+    document.getElementById("overlay").style.background =
+      theme.bg_overlay_color;
+  }
+}
+  
+  // FORMAT TIME
 function formatTime(sec){
   const m = Math.floor(sec/60).toString().padStart(2,'0');
   const s = (sec%60).toString().padStart(2,'0');

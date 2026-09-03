@@ -421,16 +421,27 @@ function startTimer(){
 }
 
       // END
-      if(remaining <=0){
-        clearInterval(interval);
-        interval = null; // important to reset for toggle logic
+    if(remaining <=0){
+  clearInterval(interval);
+  interval = null;
 
-        if(endAudio){
-          endAudio.currentTime = 0;
-          endAudio.play().catch(()=>{});
-        }
+  // ANALYTICS
+  const timeSpentSeconds = Math.floor(
+    (Date.now() - practiceStartTime) / 1000
+  );
 
-        toggleBtn.innerText = "Done";
+  track("completed", {
+    ...getTimerAnalyticsSettings(),
+    time_spent_seconds: timeSpentSeconds,
+    completion_percent: 100
+  });
+
+  if(endAudio){
+    endAudio.currentTime = 0;
+    endAudio.play().catch(()=>{});
+  }
+
+  toggleBtn.innerText = "Done";
 
         // fade out timer & buttons
         timerEl.classList.add("fade-out");

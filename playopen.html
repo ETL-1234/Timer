@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Meditation Timer Open</title>
+<title>Meditation timer open-ended</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
@@ -118,6 +118,40 @@ button{
 const SUPABASE_URL = "https://tppyzexttkuvcobbbmaz.supabase.co";
 const SUPABASE_KEY = "sb_publishable_VZiTsc0JGVx6tVf2Zu-9uQ_-FwjGpQW";
 
+  // ANALYTICS
+const APP_NAME = "ETL";
+const CONTENT_TYPE = "timer pen-ended";
+
+// Automatically uses the HTML <title>
+const CONTENT_NAME = document.title;
+
+async function track(eventType, metadata = {}) {
+
+  try {
+
+    await fetch(`${SUPABASE_URL}/rest/v1/analytics_timer`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+        Prefer: "return=minimal"
+      },
+      body: JSON.stringify({
+        app_name: APP_NAME,
+        content_type: CONTENT_TYPE,
+        title_name: CONTENT_NAME,
+        event_type: eventType,
+        metadata: metadata
+      })
+    }).catch(() => {});
+
+  } catch (err) {
+    console.log("Analytics error:", err);
+  }
+}
+
+
 // STATE
 let seconds = 0;
 let interval = null;
@@ -127,6 +161,10 @@ let hasStarted = false;
 let intervalAudio = null;
 
 let lastInteraction = Date.now();
+
+let hasTrackedStart = false;
+let practiceStartTime = null;
+
 
 // ELEMENTS
 const timerEl = document.getElementById("timer");
@@ -147,6 +185,30 @@ function loadSettings(){
   applyTheme(themeName);
 }
 
+// ANALYTICS SETTINGS
+function getTimerAnalyticsSettings(){
+
+  const duration = localStorage.getItem("timer_duration");
+  const themeName = localStorage.getItem("timer_theme");
+  const animate = localStorage.getItem("timer_animate") === "true";
+  const intervalMinutes = parseInt(
+    localStorage.getItem("timer_interval"),
+    10
+  );
+
+  return {
+    duration_minutes: Math.round(totalSeconds / 60),
+    theme: themeName || "default",
+    background: animate ? "animated" : "still",
+    end_bell: localStorage.getItem("timer_endbell_url") || "none",
+    interval_bell: intervalMinutes
+      ? true
+      : false,
+    interval_minutes: intervalMinutes || null
+  };
+}
+
+  
   //COLOR OPACITY
 
   function hexToRGBA(hex, opacity){

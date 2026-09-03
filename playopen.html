@@ -341,7 +341,32 @@ toggleBtn.onclick = () => {
   lastInteraction = Date.now();
 
   if(!interval){
+    // ANALYTICS
+    practiceStartTime = Date.now();
+
+    if(!hasTrackedStart){
+
+      track("start", {
+        ...getTimerAnalyticsSettings()
+      });
+
+      hasTrackedStart = true;
+    }
+
     toggleBtn.innerText = "Pause";
+
+    await startCountdown();
+
+    timerEl.innerText = formatTime(remaining);
+
+    startTimer();
+
+  } else {
+    paused = !paused;
+    toggleBtn.innerText = paused ? "Resume" : "Pause";
+  }
+};
+
     
 // Unlock interval audio through the user's tap
     if(intervalAudio){

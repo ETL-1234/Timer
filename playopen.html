@@ -417,24 +417,14 @@ toggleBtn.onclick = () => {
 
 document.getElementById("editBtn").onclick = () => {
 
- document.getElementById("editBtn").onclick = () => {
-
   // ANALYTICS
-  if(hasTrackedStart && remaining > 0){
+  if(hasTrackedStart){
 
-    const timeSpentSeconds = Math.max(
-      0,
-      totalSeconds - remaining
-    );
+    const timeSpentSeconds = seconds;
 
-    const completionPercent = Math.round(
-      (timeSpentSeconds / totalSeconds) * 100
-    );
-
-    track("aborted", {
+    track("stopped", {
       ...getTimerAnalyticsSettings(),
-      time_spent_seconds: timeSpentSeconds,
-      completion_percent: completionPercent
+      time_spent_seconds: timeSpentSeconds
     });
 
     hasTrackedStart = false;
@@ -442,9 +432,10 @@ document.getElementById("editBtn").onclick = () => {
   }
 
   window.location.href =
-    "https://etl-1234.github.io/Timer/setup.html";
+    "https://etl-1234.github.io/Timer/setupopen.html";
 };
 
+  
 // END PRACTICE
 journalBtn.onclick = () => {
   window.location.href = "https://etl-1234.github.io/Timer/setupopen.html";

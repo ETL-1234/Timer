@@ -397,12 +397,37 @@ toggleBtn.onclick = () => {
 };
 
 document.getElementById("editBtn").onclick = () => {
-  window.location.href = "https://etl-1234.github.io/Timer/setupopen.html";
+
+  // ANALYTICS
+  if(hasTrackedStart && remaining > 0){
+
+    const timeSpentSeconds = Math.max(
+      0,
+      totalSeconds - remaining
+    );
+
+    const completionPercent = Math.round(
+      (timeSpentSeconds / totalSeconds) * 100
+    );
+
+    track("aborted", {
+      ...getTimerAnalyticsSettings(),
+      time_spent_seconds: timeSpentSeconds,
+      completion_percent: completionPercent
+    });
+
+    hasTrackedStart = false;
+    practiceStartTime = null;
+  }
+
+  window.location.href =
+    "https://etl-1234.github.io/Timer/setup.html";
 };
 
-// JOURNAL NAVIGATION
+
+// END PRACTICE
 journalBtn.onclick = () => {
-  window.location.href = "https://etl-1234.github.io/Journal/journalpage.html";
+  window.location.href = "https://etl-1234.github.io/Timer/setupopen.html";
 };
 
 // AUTO FADE UI

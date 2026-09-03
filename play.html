@@ -258,6 +258,36 @@ applyTheme(themeName);
 
 }
 
+  // ANALYTICS SETTINGS
+function getTimerAnalyticsSettings(){
+
+  const duration = localStorage.getItem("timer_duration");
+  const themeName = localStorage.getItem("timer_theme");
+  const animate = localStorage.getItem("timer_animate") === "true";
+  const intervalMinutes = parseInt(
+    localStorage.getItem("timer_interval"),
+    10
+  );
+
+  return {
+    duration: duration || "05:00",
+
+    duration_minutes: Math.round(totalSeconds / 60),
+
+    theme: themeName || "default",
+
+    background: animate ? "animated" : "still",
+
+    end_bell: localStorage.getItem("timer_endbell_url") || "none",
+
+    interval_bell: intervalMinutes
+      ? true
+      : false,
+
+    interval_minutes: intervalMinutes || null
+  };
+}
+  
   //COLOR OPACITY
 
   function hexToRGBA(hex, opacity){

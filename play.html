@@ -278,7 +278,16 @@ function getTimerAnalyticsSettings(){
 
     background: animate ? "animated" : "still",
 
-    end_bell: localStorage.getItem("timer_endbell_url") || "none",
+    end_bell: (() => {
+  const url = localStorage.getItem("timer_endbell_url");
+
+  if(!url) return "none";
+
+  return url
+    .split("/")
+    .pop()
+    .replace(/\.[^/.]+$/, "");
+})(),
 
     interval_bell: intervalMinutes
       ? true
